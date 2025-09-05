@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>My LINE WebApp</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- LIFF SDK -->
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <img src="hero.png" alt="Hero" class="hero">
+    <h1>เมนูหลัก</h1>
+  </header>
+
+  <main>
+    <div class="menu">
+      <button onclick="openMenu('menu1')">📌 เมนู 1</button>
+      <button onclick="openMenu('menu2')">💬 เมนู 2</button>
+      <button onclick="openMenu('menu3')">⚙️ เมนู 3</button>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2025 My LINE App</p>
+  </footer>
+
+  <script>
+    async function main() {
+      await liff.init({ liffId: "ใส่-LIFF-ID-ที่นี่" });
+
+      if (!liff.isLoggedIn()) {
+        liff.login();
+      }
+
+      const profile = await liff.getProfile();
+      console.log("สวัสดี " + profile.displayName);
+    }
+
+    function openMenu(menu) {
+      alert("คุณกด " + menu);
+      // ที่นี่สามารถเพิ่มฟังก์ชันเชื่อมกับ LINE API เช่น ส่งข้อความ
+    }
+
+    main();
+  </script>
+</body>
+</html>
