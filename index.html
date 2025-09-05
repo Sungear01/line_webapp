@@ -2,49 +2,135 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <title>My LINE WebApp</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!-- LIFF SDK -->
-  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>เว็บแอพโรคซึมเศร้า - MindCare</title>
+  <!-- Link to external stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+  <!-- Google Fonts for clean typography -->
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-  <header>
-    <img src="hero.png" alt="Hero" class="hero">
-    <h1>เมนูหลัก</h1>
+  <!-- Site Header with navigation -->
+  <header class="site-header">
+    <div class="container header-container">
+      <div class="logo">MindCare</div>
+      <nav class="nav" id="mainNav">
+        <ul>
+          <li><a href="#home">หน้าแรก</a></li>
+          <li><a href="#what">โรคซึมเศร้าคืออะไร</a></li>
+          <li><a href="#services">บริการ</a></li>
+          <li><a href="#experts">แพทย์ผู้เชี่ยวชาญ</a></li>
+          <li><a href="#help">ขอความช่วยเหลือ</a></li>
+          <li><a href="#contact">ติดต่อ</a></li>
+        </ul>
+      </nav>
+      <!-- Toggle button for mobile navigation -->
+      <button class="nav-toggle" id="navToggle" aria-label="open navigation">
+        <span class="hamburger"></span>
+      </button>
+    </div>
   </header>
 
-  <main>
-    <div class="menu">
-      <button onclick="openMenu('menu1')">📌 เมนู 1</button>
-      <button onclick="openMenu('menu2')">💬 เมนู 2</button>
-      <button onclick="openMenu('menu3')">⚙️ เมนู 3</button>
+  <!-- Hero section -->
+  <section id="home" class="hero">
+    <div class="container hero-inner">
+      <div class="hero-content">
+        <h1>ดูแลใจคุณ</h1>
+        <p>เรียนรู้และเข้าใจเกี่ยวกับโรคซึมเศร้า พร้อมค้นหาการช่วยเหลือที่เหมาะสม</p>
+        <a class="cta-button" href="#help">เริ่มต้นเลย</a>
+      </div>
+      <div class="hero-image">
+        <!-- Decorative illustration representing mental health -->
+        <img src="ba8f5741-4fe4-42f8-9062-b6a303890d30.png" alt="ภาพประกอบเกี่ยวกับสุขภาพจิต">
+      </div>
     </div>
-  </main>
+  </section>
 
-  <footer>
-    <p>© 2025 My LINE App</p>
+  <!-- Information about depression -->
+  <section id="what" class="info-section">
+    <div class="container">
+      <h2>โรคซึมเศร้าคืออะไร</h2>
+      <p>
+        โรคซึมเศร้าเป็นภาวะทางอารมณ์ที่ส่งผลกระทบต่อความรู้สึก ความคิด และการใช้ชีวิตประจำวันของบุคคล
+        ผู้ที่เป็นโรคซึมเศร้ามักรู้สึกเศร้า หดหู่ ไม่มีพลังหรือความสนใจในสิ่งที่เคยชอบอย่างต่อเนื่อง หากคุณรู้สึกมีอาการดังกล่าว
+        เรามีข้อมูลและทรัพยากรเพื่อช่วยให้คุณเข้าใจโรคซึมเศร้ามากขึ้นและหาทางรับมือได้อย่างเหมาะสม
+      </p>
+    </div>
+  </section>
+
+  <!-- Our Services section -->
+  <section id="services" class="info-section light-bg">
+    <div class="container">
+      <h2>บริการของเรา</h2>
+      <div class="cards">
+        <div class="card">
+          <h3>แบบทดสอบอาการ</h3>
+          <p>ทำแบบทดสอบเพื่อประเมินระดับความเสี่ยงของคุณ</p>
+        </div>
+        <div class="card">
+          <h3>แหล่งข้อมูล</h3>
+          <p>อ่านบทความและคำแนะนำในการดูแลจิตใจ</p>
+        </div>
+        <div class="card">
+          <h3>ชุมชนออนไลน์</h3>
+          <p>เข้าร่วมพูดคุยกับคนอื่นๆ ที่มีประสบการณ์คล้ายกัน</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Experts section -->
+  <section id="experts" class="info-section">
+    <div class="container">
+      <h2>แพทย์ผู้เชี่ยวชาญ</h2>
+      <p>
+        เราทำงานร่วมกับแพทย์และผู้เชี่ยวชาญด้านสุขภาพจิตที่พร้อมให้คำปรึกษาและแนวทางการรักษาอย่างมีประสิทธิภาพ
+        คุณสามารถค้นหาและติดต่อผู้เชี่ยวชาญเพื่อรับคำปรึกษาที่ตรงกับความต้องการของคุณได้ที่นี่
+      </p>
+    </div>
+  </section>
+
+  <!-- Help section -->
+  <section id="help" class="info-section light-bg">
+    <div class="container">
+      <h2>ขอความช่วยเหลือ</h2>
+      <p>
+        หากคุณหรือคนที่คุณรักกำลังประสบปัญหาเกี่ยวกับภาวะซึมเศร้า โปรดอย่าลังเลที่จะขอความช่วยเหลือ มีทั้งบริการปรึกษาออนไลน์
+        กลุ่มสนับสนุน และสายด่วนฉุกเฉินที่พร้อมให้บริการตลอด 24 ชั่วโมงสำหรับกรณีฉุกเฉิน
+      </p>
+    </div>
+  </section>
+
+  <!-- Contact section with a simple form -->
+  <section id="contact" class="info-section">
+    <div class="container contact-container">
+      <h2>ติดต่อเรา</h2>
+      <form id="contactForm" class="contact-form">
+        <div class="form-group">
+          <label for="name">ชื่อ</label>
+          <input type="text" id="name" name="name" placeholder="กรอกชื่อของคุณ" required>
+        </div>
+        <div class="form-group">
+          <label for="email">อีเมล</label>
+          <input type="email" id="email" name="email" placeholder="example@email.com" required>
+        </div>
+        <div class="form-group">
+          <label for="message">ข้อความ</label>
+          <textarea id="message" name="message" rows="4" placeholder="คุณต้องการบอกอะไรกับเรา?" required></textarea>
+        </div>
+        <button type="submit" class="cta-button">ส่งข้อความ</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; 2025 MindCare. All rights reserved.</p>
+    </div>
   </footer>
 
-  <script>
-    async function main() {
-      await liff.init({ liffId: "ใส่-LIFF-ID-ที่นี่" });
-
-      if (!liff.isLoggedIn()) {
-        liff.login();
-      }
-
-      const profile = await liff.getProfile();
-      console.log("สวัสดี " + profile.displayName);
-    }
-
-    function openMenu(menu) {
-      alert("คุณกด " + menu);
-      // ที่นี่สามารถเพิ่มฟังก์ชันเชื่อมกับ LINE API เช่น ส่งข้อความ
-    }
-
-    main();
-  </script>
+  <!-- Link to custom scripts -->
+  <script src="script.js"></script>
 </body>
 </html>
