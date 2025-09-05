@@ -173,6 +173,12 @@ a {
   transition: background 0.3s ease;
 }
 
+
+.cta-button:hover {
+  background:#0a8590;
+}
+
+
 .cta-button:hover {
   background: #5EA5B1;
 }
@@ -342,4 +348,6 @@ a {
   .hero-image {
     margin-top: 2rem;
   }
+
+
 }
