@@ -5,61 +5,46 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>เว็บแอพโรคซึมเศร้า – MindCare</title>
 
-  <!-- สไตล์ (ใส่เวอร์ชันกันแคช) -->
+  <!-- โหลดไฟล์สไตล์พร้อมเวอร์ชันกันแคช -->
   <link rel="stylesheet" href="styles.css?v=20250911" />
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet" />
 
-  <!-- LIFF -->
+  <!-- LIFF SDK -->
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
     const LIFF_ID = "2008065271-BMmpNEZb";
-    const VERSION_TAG = "20250911"; // เปลี่ยนเลขนี้เมื่ออัปเดตโค้ด
-
-    // helper: เติมเวอร์ชันให้ URL ปัจจุบันเพื่อกันแคช
-    function withVersionHash(targetHash = "#home") {
-      const base = location.origin + location.pathname;
-      return `${base}${targetHash}?v=${VERSION_TAG}`;
-    }
 
     async function main() {
       try {
         await liff.init({ liffId: LIFF_ID });
 
+        // ถ้ายังไม่ล็อกอิน ให้ใช้ login() โดยไม่ต้องระบุ redirectUri ที่มี # หรือ query
         if (!liff.isLoggedIn()) {
-          // กลับมาหน้าเดิมพร้อม #home และเวอร์ชันกันแคช
-          liff.login({ redirectUri: withVersionHash("#home") });
+          liff.login();
           return;
         }
 
-        // แสดงชื่อผู้ใช้ (ถ้ามีจุดแสดงผลบนหน้า)
-        const profile = await liff.getProfile().catch(() => null);
-        const nameElem = document.getElementById("userName");
-        if (profile && nameElem) nameElem.textContent = profile.displayName || "";
+        // แสดงชื่อผู้ใช้ (ถ้ามีที่แสดงชื่อ)
+        const profile = await liff.getProfile();
+        const nameElem = document.getElementById('userName');
+        if (nameElem) nameElem.textContent = profile.displayName;
 
-        // หลังล็อกอิน ถ้า hash ไม่ใช่ #home ให้พากลับหน้าแรก
-        if (location.hash !== "#home") {
-          // ใช้ replace() เพื่อลดประวัติซ้อนใน webview
-          location.replace(withVersionHash("#home"));
-          return;
-        }
-
-        // กันกรณีเปิดมาที่ #home แต่แคชแรง → เติมเวอร์ชันบังคับโหลดใหม่
-        if (!location.search.includes("v=")) {
-          location.replace(withVersionHash("#home"));
-          return;
+        // หลังล็อกอินแล้ว หากไม่ใช่ #home ให้เลื่อนไปยังหน้าแรก
+        if (location.hash !== '#home') {
+          location.hash = '#home';
         }
       } catch (err) {
         console.error("LIFF init error:", err);
-        // ไม่แจ้ง alert เพื่อเลี่ยงรบกวนผู้ใช้บน webview
       }
     }
 
-    document.addEventListener("DOMContentLoaded", main);
+    document.addEventListener('DOMContentLoaded', main);
   </script>
 
-  <!-- สคริปต์ของคุณ (ใส่เวอร์ชันกันแคชเหมือนกัน) -->
+  <!-- สคริปต์ของคุณ พร้อมเวอร์ชันกันแคช -->
   <script defer src="script.js?v=20250911"></script>
 </head>
+
 
 <body>
   <!-- Header -->
