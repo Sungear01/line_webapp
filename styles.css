@@ -1,519 +1,202 @@
+/* ==========================================================================
+   MindCare — Clean, Accessible CSS
+   --------------------------------------------------------------------------
+   - Theme variables
+   - Base / Typography
+   - Header & Navigation
+   - Hero
+   - Sections
+   - Cards
+   - Experts Grid
+   - Expert Detail
+   - Quiz
+   - Forms
+   - Footer
+   - Responsive helpers
+   ========================================================================== */
 
+/* ----------------------- Theme variables ----------------------- */
+:root{
+  /* brand */
+  --color-primary: #1f5f6f;      /* เข้มขึ้นเพื่อคอนทราสต์ที่ดี */
+  --color-primary-2: #2a7386;
+  --color-accent:  #5EA5B1;
+  --color-ink:     #1b2a34;
+  --color-ink-2:   #415A77;
+  --color-muted:   #5a7d87;
+  --color-subtle:  #8eabb4;
 
-:root {
-  /* Brand colours */
-  --brand-dark:    #12303d;   /* primary ink colour for text */
-  --brand-medium:  #1a4d5f;   /* primary accent for headers and links */
-  --brand-light:   #edf4f7;   /* light surface for hero and cards */
-  --accent:        #2fa7ba;   /* secondary accent for buttons and highlights */
-  --muted:         #657a87;   /* muted body text colour */
-
-  /* Surface colours */
+  /* surfaces */
   --surface:       #ffffff;
-  --surface-alt:   #f7fbfc;
+  --surface-2:     #f5fafb;
+  --surface-3:     #e9f5f7;
 
-  /* Typography */
-  --font-base:     18px;      /* base font size, used for most body text */
-  --font-scale:    1.25;      /* modular scale multiplier for headings */
-  --line-height:   1.6;       /* baseline line height for body text */
+  /* borders & shadows */
+  --border:        #d5e3e9;
+  --shadow-sm:     0 4px 10px rgba(0,0,0,.06);
+  --shadow-md:     0 8px 20px rgba(0,0,0,.08);
+  --shadow-lg:     0 14px 30px rgba(0,0,0,.12);
 
-  /* Layout */
-  --radius:        12px;      /* default border radius */
-  --max-width:     1200px;    /* max container width */
+  /* sizing */
+  --radius:        12px;
+  --radius-lg:     16px;
+  --container:     1200px;
 }
 
-/* --------------------------------------------------------------------------
- * Base styles
- * Apply a clean reset for box sizing and set global type rules. Use a
- * legible Thai/Latin font (Sarabun) with system fallbacks. Ensure high
- * contrast between text and background colours to aid users with low
- * vision【748740736786660†L176-L200】.
- */
+/* ----------------------- Base / Typography --------------------- */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  color:var(--color-ink);
+  background:var(--surface);
+  font-family:'Sarabun',system-ui,-apple-system,Segoe UI,Roboto,Arial,'Noto Sans Thai',sans-serif;
+  font-size:16.5px;            /* อ่านง่ายขึ้น */
+  line-height:1.7;
+  text-rendering:optimizeLegibility;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+.container{max-width:var(--container);margin:0 auto;padding:0 1.25rem}
 
-* { box-sizing: border-box; }
+h1,h2,h3{color:var(--color-primary);margin:0 0 .6rem}
+h1{font-size:2.1rem;font-weight:700}
+h2{font-size:1.8rem;font-weight:700}
+h3{font-size:1.25rem;font-weight:700}
 
-body {
-  margin: 0;
-  font-family: 'Sarabun', 'Segoe UI', Roboto, Arial, 'Noto Sans Thai', sans-serif;
-  font-size: var(--font-base);
-  line-height: var(--line-height);
-  color: var(--brand-dark);
-  background-color: var(--surface);
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
+/* Focus ring ชัดเจน */
+:where(a,button,input,textarea,select):focus{
+  outline:3px solid var(--color-accent);
+  outline-offset:2px;
+  border-radius:8px;
 }
 
-a {
-  color: var(--brand-medium);
-  text-decoration: none;
+/* ----------------------- Header & Navigation ------------------- */
+.site-header{
+  position:fixed; inset:0 0 auto 0; background:var(--surface);
+  box-shadow:0 2px 8px rgba(0,0,0,.06); z-index:1000;
 }
-a:hover {
-  text-decoration: underline;
-}
+.header-container{display:flex;align-items:center;justify-content:space-between;padding:.9rem 0}
+.logo{font-weight:800;letter-spacing:.5px;color:var(--color-primary);text-transform:uppercase}
+.user-name{font-size:.95rem;color:var(--color-muted);margin-left:.75rem}
 
-img { max-width: 100%; display: block; }
-
-.container {
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 0 1.25rem;
-}
-
-/* --------------------------------------------------------------------------
- * Header and navigation
- * Create a simple fixed header with navigation links. Use larger spacing
- * and font size for better tap targets on mobile. The navigation becomes a
- * drawer on small screens.
- */
-
-.site-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  background: var(--surface);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-  z-index: 1000;
-}
-
-.header-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem 0;
-}
-
-.logo {
-  font-size: calc(var(--font-base) * 1.2);
-  font-weight: 700;
-  color: var(--brand-medium);
-  text-transform: uppercase;
-}
-
-.nav ul {
-  list-style: none;
-  display: flex;
-  gap: 1.5rem;
-  margin: 0;
-  padding: 0;
-}
-
-.nav a {
-  color: var(--brand-medium);
-  font-weight: 600;
-  font-size: calc(var(--font-base) * 0.95);
-  opacity: 0.9;
-  transition: opacity 0.2s;
-}
-.nav a:hover {
-  opacity: 1;
-}
-
-.nav-toggle {
-  display: none;
-  background: none;
-  border: 0;
-  cursor: pointer;
-  padding: 0.5rem;
-}
+.nav ul{display:flex;gap:1.25rem;list-style:none;margin:0;padding:0}
+.nav a{color:var(--color-primary);font-weight:600;opacity:.9}
+.nav a:hover{opacity:1}
+.nav-toggle{display:none;background:none;border:0;cursor:pointer;padding:.5rem}
 .nav-toggle .hamburger,
 .nav-toggle .hamburger::before,
-.nav-toggle .hamburger::after {
-  display: block;
-  width: 22px;
-  height: 2px;
-  background-color: var(--brand-medium);
-  border-radius: 1px;
-  position: relative;
-  transition: transform 0.25s ease;
+.nav-toggle .hamburger::after{
+  width:24px;height:2px;background:var(--color-primary);display:block;position:relative;transition:transform .25s,background .25s;border-radius:2px;
 }
 .nav-toggle .hamburger::before,
-.nav-toggle .hamburger::after {
-  content: '';
-  position: absolute;
-  left: 0;
+.nav-toggle .hamburger::after{content:"";position:absolute;left:0}
+.nav-toggle .hamburger::before{top:-6px}
+.nav-toggle .hamburger::after{top:6px}
+.nav-toggle.open .hamburger{background:transparent}
+.nav-toggle.open .hamburger::before{transform:rotate(45deg) translate(5px,5px)}
+.nav-toggle.open .hamburger::after{transform:rotate(-45deg) translate(5px,-5px)}
+
+/* ----------------------- Hero --------------------------------- */
+.hero{
+  padding-top:92px;
+  background:linear-gradient(180deg,var(--surface-3) 0%, #ffffff 70%);
 }
-.nav-toggle .hamburger::before { top: -6px; }
-.nav-toggle .hamburger::after  { top:  6px; }
-.nav-toggle.open .hamburger {
-  background: transparent;
+.hero-inner{display:grid;grid-template-columns:1.1fr .9fr;gap:2rem;align-items:center;padding:3rem 0}
+.hero-content p{color:var(--color-ink-2);max-width:540px}
+.cta-button{
+  display:inline-block;padding:.75rem 1.25rem;border-radius:10px;
+  background:var(--color-primary);color:#fff;font-weight:800;letter-spacing:.3px;
+  box-shadow:var(--shadow-sm); transition:transform .15s, box-shadow .15s, opacity .15s;
 }
-.nav-toggle.open .hamburger::before {
-  transform: rotate(45deg) translate(5px, 5px);
-}
-.nav-toggle.open .hamburger::after {
-  transform: rotate(-45deg) translate(5px, -5px);
+.cta-button:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);opacity:.95}
+.ghost-button{
+  display:inline-block;padding:.55rem 1rem;border:2px solid var(--color-primary);
+  border-radius:10px;color:var(--color-primary);font-weight:800
 }
 
-/* --------------------------------------------------------------------------
- * Hero section
- * Present a calming introduction with a headline, subheading, call to action,
- * and an image. Use a gradient background to gently differentiate this
- * section. Make sure the text sits on a sufficiently light area for
- * readability.
- */
+/* ----------------------- Sections ------------------------------ */
+.info-section{padding:3.5rem 0;background:var(--surface)}
+.info-section.light-bg{background:var(--surface-2)}
+.info-section p{color:var(--color-ink-2);max-width:820px;margin:0 auto 1.5rem;text-align:center}
 
-.hero {
-  padding-top: 100px; /* offset the fixed header */
-  background: linear-gradient(180deg, var(--brand-light) 0%, var(--surface) 70%);
-  padding-bottom: 3rem;
+/* ----------------------- Cards -------------------------------- */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  box-shadow:var(--shadow-sm);padding:1.25rem;text-align:center;transition:transform .15s, box-shadow .15s;
 }
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
+.card h3{margin:.25rem 0 .35rem}
+.card p{color:var(--color-muted);margin:0}
 
-.hero-inner {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  align-items: center;
-  padding: 3rem 0;
-}
+/* ----------------------- Experts Grid -------------------------- */
+.experts-grid{display:grid;gap:1rem;grid-template-columns:repeat(5,1fr)}
+@media (max-width:1100px){.experts-grid{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:680px){.experts-grid{grid-template-columns:repeat(2,1fr)}}
 
-.hero-content h1 {
-  font-size: calc(var(--font-base) * var(--font-scale) * 1.5);
-  margin: 0 0 1rem;
-  color: var(--brand-medium);
-  font-weight: 700;
+.expert-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  box-shadow:var(--shadow-sm);overflow:hidden;cursor:pointer;transition:transform .15s, box-shadow .15s;
 }
-.hero-content p {
-  font-size: calc(var(--font-base) * 1.05);
-  margin: 0 0 2rem;
-  max-width: 520px;
-  color: var(--muted);
-}
-.cta-button {
-  display: inline-block;
-  padding: 0.75rem 1.5rem;
-  background: var(--brand-medium);
-  color: #fff;
-  border-radius: var(--radius);
-  font-weight: 700;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-.cta-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-}
-.hero-image {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.hero-image img {
-  border-radius: var(--radius);
-}
+.expert-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
+.expert-photo{width:100%;aspect-ratio:1/1.1;object-fit:cover}
+.expert-body{padding:.85rem 1rem}
+.expert-name{font-weight:800;color:var(--color-primary)}
+.expert-role{font-size:.95rem;color:var(--color-muted);margin-top:.1rem}
+.expert-contact{font-size:.9rem;color:#556972;margin-top:.25rem}
 
-/* --------------------------------------------------------------------------
- * Sections
- * General styling for content sections including headings, paragraphs and
- * optional light backgrounds. Keep paragraphs centred for a clean look.
- */
+/* ----------------------- Expert Detail ------------------------- */
+.hidden{display:none}
+.back-link{display:inline-block;margin-bottom:1rem;color:var(--color-primary);font-weight:800}
+.expert-profile{display:grid;grid-template-columns:260px 1fr;gap:1.25rem;align-items:start}
+@media (max-width:860px){.expert-profile{grid-template-columns:1fr}}
 
-.info-section {
-  padding: 3.5rem 0;
-  background: var(--surface);
+.profile-photo{width:260px;border-radius:var(--radius-lg);box-shadow:var(--shadow-md)}
+.profile-block{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-sm);padding:1rem 1.25rem
 }
-.info-section.light {
-  background: var(--surface-alt);
+.profile-block h3{margin:.6rem 0 .4rem}
+.profile-list{margin:.25rem 0 0;padding-left:1.1rem}
+.profile-list li{margin:.25rem 0}
+
+/* ----------------------- Quiz --------------------------------- */
+.quiz-form{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:.9rem}
+.quiz-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:1rem}
+.quiz-item h4{margin:.1rem 0 .5rem;color:var(--color-primary)}
+.quiz-options{display:flex;flex-wrap:wrap;gap:.55rem}
+.quiz-options label{
+  background:var(--surface-2);border:1px solid var(--border);border-radius:999px;padding:.35rem .75rem;cursor:pointer;
 }
-.info-section h2 {
-  font-size: calc(var(--font-base) * var(--font-scale) * 1.3);
-  margin: 0 0 1rem;
-  text-align: center;
-  color: var(--brand-medium);
-  font-weight: 700;
+.quiz-submit{margin-top:.75rem}
+.quiz-result{max-width:760px;margin:1rem auto 0;padding:1rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-sm)}
+.badge{display:inline-block;padding:.25rem .6rem;border-radius:999px;font-weight:800}
+
+/* ----------------------- Forms -------------------------------- */
+.contact-container{max-width:600px;margin:0 auto}
+.contact-form{display:flex;flex-direction:column;gap:1rem}
+.form-group{display:flex;flex-direction:column}
+.form-group label{margin-bottom:.25rem;font-weight:700;color:var(--color-primary)}
+.form-group input,.form-group textarea{
+  padding:.8rem;border:1px solid var(--border);border-radius:10px;font-size:1rem;
+  font-family:inherit;background:#fff;transition:border .15s, box-shadow .15s;
 }
-.info-section p {
-  font-size: calc(var(--font-base) * 1.0);
-  max-width: 800px;
-  margin: 0 auto 1.5rem;
-  text-align: center;
-  color: var(--muted);
-  line-height: var(--line-height);
+.form-group input:focus,.form-group textarea:focus{
+  border-color:var(--color-accent);box-shadow:0 0 0 4px rgba(94,165,177,.18);
 }
 
-/* --------------------------------------------------------------------------
- * Cards
- * Flexible card components used for services or other information. Use a
- * soft shadow and modest radius, with a subtle hover lift. Cards adjust
- * gracefully on smaller screens.
- */
+/* ----------------------- Footer ------------------------------- */
+.site-footer{background:var(--color-primary);padding:1rem 0;color:#fff;text-align:center;font-size:.95rem}
 
-.cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 1.25rem;
-  justify-items: center;
+/* ----------------------- Responsive helpers ------------------- */
+@media (max-width:900px){
+  .hero-inner{grid-template-columns:1fr; text-align:center}
 }
-.card {
-  background: var(--surface);
-  border: 1px solid #e0edf1;
-  border-radius: var(--radius);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-  padding: 1.5rem;
-  text-align: center;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-}
-.card h3 {
-  font-size: calc(var(--font-base) * var(--font-scale));
-  margin: 0.5rem 0;
-  color: var(--brand-medium);
-  font-weight: 700;
-}
-.card p {
-  font-size: calc(var(--font-base) * 0.9);
-  margin: 0;
-  color: var(--muted);
-  line-height: 1.5;
-}
-
-/* --------------------------------------------------------------------------
- * Expert directory
- * Grid display for doctors. The pictures are displayed with a 4:5 aspect
- * ratio to better fit human portraits. Cards lift slightly on hover.
- */
-
-.experts-grid {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  padding-top: 0.5rem;
-}
-.expert-card {
-  background: var(--surface);
-  border: 1px solid #e0edf1;
-  border-radius: var(--radius);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-.expert-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 18px rgba(0,0,0,0.1);
-}
-.expert-photo {
-  width: 100%;
-  aspect-ratio: 4 / 5;
-  object-fit: cover;
-}
-.expert-body {
-  padding: 0.75rem 1rem;
-}
-.expert-name {
-  font-weight: 700;
-  color: var(--brand-medium);
-}
-.expert-role {
-  font-size: calc(var(--font-base) * 0.85);
-  color: var(--muted);
-  margin-top: 0.15rem;
-}
-.expert-contact {
-  font-size: calc(var(--font-base) * 0.8);
-  color: #556972;
-  margin-top: 0.2rem;
-}
-
-/* --------------------------------------------------------------------------
- * Expert detail view
- * When an individual doctor is selected, hide the grid and show a two
- * column layout with photo on the left and details on the right. On small
- * screens it collapses into a single column.
- */
-
-.hidden {
-  display: none;
-}
-
-.expert-profile {
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 1.5rem;
-  align-items: flex-start;
-}
-.profile-photo {
-  width: 100%;
-  border-radius: var(--radius);
-  box-shadow: 0 6px 14px rgba(0,0,0,0.1);
-}
-.profile-block {
-  background: var(--surface);
-  border: 1px solid #e0edf1;
-  border-radius: var(--radius);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-  padding: 1rem 1.25rem;
-}
-.profile-block h2 {
-  margin: 0;
-  font-size: calc(var(--font-base) * var(--font-scale) * 1.2);
-  color: var(--brand-medium);
-  font-weight: 700;
-}
-.profile-block h3 {
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
-  font-size: calc(var(--font-base) * var(--font-scale) * 0.9);
-  color: var(--brand-medium);
-  font-weight: 600;
-}
-.profile-list {
-  margin: 0;
-  padding-left: 1.2rem;
-}
-.profile-list li {
-  margin: 0.3rem 0;
-  font-size: calc(var(--font-base) * 0.9);
-  color: var(--muted);
-}
-
-/* --------------------------------------------------------------------------
- * Quiz form
- * Build a simple vertical list of quiz questions. Use pill buttons for
- * options. Provide a clearly separated result panel with colour-coded
- * severity badges.
- */
-
-.quiz-form {
-  max-width: 760px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-.quiz-item {
-  background: var(--surface);
-  border: 1px solid #e0edf1;
-  border-radius: var(--radius);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-  padding: 1rem;
-}
-.quiz-item h4 {
-  margin: 0 0 0.5rem;
-  color: var(--brand-medium);
-  font-weight: 600;
-  font-size: calc(var(--font-base) * 0.95);
-}
-.quiz-options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-.quiz-options label {
-  background: var(--surface-alt);
-  border: 1px solid #d5e3eb;
-  border-radius: 20px;
-  padding: 0.4rem 0.8rem;
-  cursor: pointer;
-  font-size: calc(var(--font-base) * 0.9);
-}
-.quiz-submit {
-  margin-top: 1rem;
-}
-.quiz-result {
-  max-width: 760px;
-  margin: 1rem auto 0;
-  padding: 1rem;
-  background: var(--surface);
-  border: 1px solid #e0edf1;
-  border-radius: var(--radius);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-}
-.badge {
-  display: inline-block;
-  padding: 0.25rem 0.6rem;
-  border-radius: 20px;
-  font-weight: 700;
-}
-
-/* --------------------------------------------------------------------------
- * Contact form
- * Straightforward form layout with stacked inputs. Increase input padding and
- * enlarge the font for easier reading. Highlight focus state clearly.
- */
-
-.contact-container {
-  max-width: 600px;
-  margin: 0 auto;
-}
-.contact-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-.form-group label {
-  margin-bottom: 0.25rem;
-  font-weight: 600;
-  color: var(--brand-medium);
-  font-size: calc(var(--font-base) * 0.9);
-}
-.form-group input,
-.form-group textarea {
-  padding: 0.8rem;
-  border: 1px solid #cfdfe5;
-  border-radius: var(--radius);
-  font-size: calc(var(--font-base) * 0.95);
-  font-family: inherit;
-  resize: vertical;
-}
-.form-group input:focus,
-.form-group textarea:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(47,167,186,0.2);
-}
-
-.site-footer {
-  background: var(--brand-medium);
-  color: #fff;
-  padding: 1rem 0;
-  text-align: center;
-  font-size: calc(var(--font-base) * 0.8);
-}
-
-/* --------------------------------------------------------------------------
- * Responsive adjustments
- * Restructure the grid layouts on smaller screens and convert the nav into
- * a slide-out drawer accessible via a hamburger button.
- */
-
-@media (max-width: 900px) {
-  .hero-inner {
-    grid-template-columns: 1fr;
-    text-align: center;
-  }
-  .hero-image {
-    margin-top: 2rem;
-  }
-  .nav ul {
-    position: fixed;
-    top: 0;
-    right: -100%;
-    height: 100%;
-    width: 260px;
-    background: var(--surface);
-    box-shadow: -2px 0 6px rgba(0,0,0,0.08);
-    flex-direction: column;
-    gap: 1.25rem;
-    padding-top: 80px;
-    padding-left: 1.5rem;
-    transition: right 0.3s ease;
-    z-index: 999;
-  }
-  .nav.open ul {
-    right: 0;
-  }
-  .nav-toggle {
-    display: block;
-  }
-  .header-container {
-    padding: 0.75rem 0;
-  }
+@media (max-width:768px){
+  .nav{position:fixed;top:0;right:-100%;height:100%;width:270px;background:#fff;box-shadow:-2px 0 10px rgba(0,0,0,.08);transition:right .28s;padding-top:78px;z-index:999}
+  .nav.open{right:0}
+  .nav ul{flex-direction:column;gap:1rem;padding-left:1.25rem}
+  .nav-toggle{display:block}
 }
