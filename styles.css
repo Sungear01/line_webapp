@@ -1,43 +1,78 @@
-/*
- * Custom styles for the MindCare mental health web app
- * Inspired by modern clean layouts with calming colors
+
+
+:root {
+  /* Brand colours */
+  --brand-dark:    #12303d;   /* primary ink colour for text */
+  --brand-medium:  #1a4d5f;   /* primary accent for headers and links */
+  --brand-light:   #edf4f7;   /* light surface for hero and cards */
+  --accent:        #2fa7ba;   /* secondary accent for buttons and highlights */
+  --muted:         #657a87;   /* muted body text colour */
+
+  /* Surface colours */
+  --surface:       #ffffff;
+  --surface-alt:   #f7fbfc;
+
+  /* Typography */
+  --font-base:     18px;      /* base font size, used for most body text */
+  --font-scale:    1.25;      /* modular scale multiplier for headings */
+  --line-height:   1.6;       /* baseline line height for body text */
+
+  /* Layout */
+  --radius:        12px;      /* default border radius */
+  --max-width:     1200px;    /* max container width */
+}
+
+/* --------------------------------------------------------------------------
+ * Base styles
+ * Apply a clean reset for box sizing and set global type rules. Use a
+ * legible Thai/Latin font (Sarabun) with system fallbacks. Ensure high
+ * contrast between text and background colours to aid users with low
+ * vision【748740736786660†L176-L200】.
  */
 
-/* Global reset and typography */
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
-  font-family: 'Sarabun', sans-serif;
-  color: #333;
-  line-height: 1.6;
-  background-color: #ffffff;
+  font-family: 'Sarabun', 'Segoe UI', Roboto, Arial, 'Noto Sans Thai', sans-serif;
+  font-size: var(--font-base);
+  line-height: var(--line-height);
+  color: var(--brand-dark);
+  background-color: var(--surface);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
 a {
-  color: inherit;
+  color: var(--brand-medium);
   text-decoration: none;
 }
-
-/* Utility container to constrain width */
-.container {
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
+a:hover {
+  text-decoration: underline;
 }
 
-/* Header styles */
+img { max-width: 100%; display: block; }
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+/* --------------------------------------------------------------------------
+ * Header and navigation
+ * Create a simple fixed header with navigation links. Use larger spacing
+ * and font size for better tap targets on mobile. The navigation becomes a
+ * drawer on small screens.
+ */
+
 .site-header {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  background: #ffffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: var(--surface);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
   z-index: 1000;
 }
 
@@ -45,309 +80,440 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  padding: 1rem 0;
 }
 
 .logo {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #2A6071;
+  font-size: calc(var(--font-base) * 1.2);
+  font-weight: 700;
+  color: var(--brand-medium);
   text-transform: uppercase;
 }
 
 .nav ul {
   list-style: none;
   display: flex;
+  gap: 1.5rem;
   margin: 0;
   padding: 0;
 }
 
-.nav ul li {
-  margin-left: 1.5rem;
+.nav a {
+  color: var(--brand-medium);
+  font-weight: 600;
+  font-size: calc(var(--font-base) * 0.95);
+  opacity: 0.9;
+  transition: opacity 0.2s;
+}
+.nav a:hover {
+  opacity: 1;
 }
 
-.nav ul li:first-child {
-  margin-left: 0;
-}
-
-.nav ul li a {
-  font-weight: 500;
-  color: #2A6071;
-  transition: color 0.3s ease;
-}
-
-.nav ul li a:hover {
-  color: #5EA5B1;
-}
-
-/* Mobile navigation toggle button */
 .nav-toggle {
   display: none;
   background: none;
-  border: none;
+  border: 0;
   cursor: pointer;
   padding: 0.5rem;
-  z-index: 1001;
 }
-
 .nav-toggle .hamburger,
 .nav-toggle .hamburger::before,
 .nav-toggle .hamburger::after {
   display: block;
-  width: 24px;
+  width: 22px;
   height: 2px;
-  background-color: #2A6071;
-  border-radius: 2px;
+  background-color: var(--brand-medium);
+  border-radius: 1px;
   position: relative;
-  transition: transform 0.3s ease;
+  transition: transform 0.25s ease;
 }
-
 .nav-toggle .hamburger::before,
 .nav-toggle .hamburger::after {
   content: '';
   position: absolute;
   left: 0;
 }
-
-.nav-toggle .hamburger::before {
-  top: -6px;
-}
-
-.nav-toggle .hamburger::after {
-  top: 6px;
-}
-
-/* Transform hamburger into cross when open */
+.nav-toggle .hamburger::before { top: -6px; }
+.nav-toggle .hamburger::after  { top:  6px; }
 .nav-toggle.open .hamburger {
   background: transparent;
 }
-
 .nav-toggle.open .hamburger::before {
   transform: rotate(45deg) translate(5px, 5px);
 }
-
 .nav-toggle.open .hamburger::after {
   transform: rotate(-45deg) translate(5px, -5px);
 }
 
-/* Hero section styles */
-.hero {
-  padding-top: 100px; /* offset for fixed header */
-  background: linear-gradient(180deg, #E9F5F7 0%, #FDFEFF 100%);
-}
+/* --------------------------------------------------------------------------
+ * Hero section
+ * Present a calming introduction with a headline, subheading, call to action,
+ * and an image. Use a gradient background to gently differentiate this
+ * section. Make sure the text sits on a sufficiently light area for
+ * readability.
+ */
 
-.hero-inner {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  padding-top: 3rem;
+.hero {
+  padding-top: 100px; /* offset the fixed header */
+  background: linear-gradient(180deg, var(--brand-light) 0%, var(--surface) 70%);
   padding-bottom: 3rem;
 }
 
-.hero-content {
-  flex: 1 1 50%;
+.hero-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: center;
+  padding: 3rem 0;
 }
 
 .hero-content h1 {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-  color: #2A6071;
-  font-weight: 600;
+  font-size: calc(var(--font-base) * var(--font-scale) * 1.5);
+  margin: 0 0 1rem;
+  color: var(--brand-medium);
+  font-weight: 700;
 }
-
 .hero-content p {
-  font-size: 1.1rem;
-  margin-bottom: 2rem;
-  max-width: 480px;
-  color: #415A77;
+  font-size: calc(var(--font-base) * 1.05);
+  margin: 0 0 2rem;
+  max-width: 520px;
+  color: var(--muted);
 }
-
 .cta-button {
   display: inline-block;
   padding: 0.75rem 1.5rem;
-  background: #2A6071;
-  color: #ffffff;
-  border-radius: 4px;
-  font-weight: 600;
-  transition: background 0.3s ease;
+  background: var(--brand-medium);
+  color: #fff;
+  border-radius: var(--radius);
+  font-weight: 700;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
-
-
 .cta-button:hover {
-  background:#0a8590;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
 }
-
-
-.cta-button:hover {
-  background: #5EA5B1;
-}
-
 .hero-image {
-  flex: 1 1 50%;
   display: flex;
   justify-content: center;
   align-items: center;
 }
-
 .hero-image img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 8px;
+  border-radius: var(--radius);
 }
 
-/* Info sections */
+/* --------------------------------------------------------------------------
+ * Sections
+ * General styling for content sections including headings, paragraphs and
+ * optional light backgrounds. Keep paragraphs centred for a clean look.
+ */
+
 .info-section {
-  padding-top: 4rem;
-  padding-bottom: 4rem;
-  background-color: #ffffff;
+  padding: 3.5rem 0;
+  background: var(--surface);
 }
-
-.light-bg {
-  background-color: #F7FCFD;
+.info-section.light {
+  background: var(--surface-alt);
 }
-
 .info-section h2 {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-  color: #2A6071;
+  font-size: calc(var(--font-base) * var(--font-scale) * 1.3);
+  margin: 0 0 1rem;
   text-align: center;
+  color: var(--brand-medium);
+  font-weight: 700;
 }
-
 .info-section p {
-  font-size: 1rem;
+  font-size: calc(var(--font-base) * 1.0);
   max-width: 800px;
-  margin: 0 auto 2rem auto;
+  margin: 0 auto 1.5rem;
   text-align: center;
-  color: #415A77;
-  line-height: 1.7;
+  color: var(--muted);
+  line-height: var(--line-height);
 }
 
-/* Service cards */
+/* --------------------------------------------------------------------------
+ * Cards
+ * Flexible card components used for services or other information. Use a
+ * soft shadow and modest radius, with a subtle hover lift. Cards adjust
+ * gracefully on smaller screens.
+ */
+
 .cards {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.25rem;
+  justify-items: center;
 }
-
 .card {
-  background: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  background: var(--surface);
+  border: 1px solid #e0edf1;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
   padding: 1.5rem;
-  flex: 1 1 260px;
-  max-width: 320px;
   text-align: center;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-
 .card:hover {
   transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
 }
-
 .card h3 {
-  font-size: 1.3rem;
-  margin-bottom: 0.5rem;
-  color: #2A6071;
-  font-weight: 600;
+  font-size: calc(var(--font-base) * var(--font-scale));
+  margin: 0.5rem 0;
+  color: var(--brand-medium);
+  font-weight: 700;
 }
-
 .card p {
-  font-size: 0.95rem;
-  color: #555;
+  font-size: calc(var(--font-base) * 0.9);
+  margin: 0;
+  color: var(--muted);
   line-height: 1.5;
 }
 
-/* Contact form */
-.contact-container {
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
+/* --------------------------------------------------------------------------
+ * Expert directory
+ * Grid display for doctors. The pictures are displayed with a 4:5 aspect
+ * ratio to better fit human portraits. Cards lift slightly on hover.
+ */
+
+.experts-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  padding-top: 0.5rem;
+}
+.expert-card {
+  background: var(--surface);
+  border: 1px solid #e0edf1;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.expert-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.1);
+}
+.expert-photo {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+.expert-body {
+  padding: 0.75rem 1rem;
+}
+.expert-name {
+  font-weight: 700;
+  color: var(--brand-medium);
+}
+.expert-role {
+  font-size: calc(var(--font-base) * 0.85);
+  color: var(--muted);
+  margin-top: 0.15rem;
+}
+.expert-contact {
+  font-size: calc(var(--font-base) * 0.8);
+  color: #556972;
+  margin-top: 0.2rem;
 }
 
+/* --------------------------------------------------------------------------
+ * Expert detail view
+ * When an individual doctor is selected, hide the grid and show a two
+ * column layout with photo on the left and details on the right. On small
+ * screens it collapses into a single column.
+ */
+
+.hidden {
+  display: none;
+}
+
+.expert-profile {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+.profile-photo {
+  width: 100%;
+  border-radius: var(--radius);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.1);
+}
+.profile-block {
+  background: var(--surface);
+  border: 1px solid #e0edf1;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  padding: 1rem 1.25rem;
+}
+.profile-block h2 {
+  margin: 0;
+  font-size: calc(var(--font-base) * var(--font-scale) * 1.2);
+  color: var(--brand-medium);
+  font-weight: 700;
+}
+.profile-block h3 {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  font-size: calc(var(--font-base) * var(--font-scale) * 0.9);
+  color: var(--brand-medium);
+  font-weight: 600;
+}
+.profile-list {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+.profile-list li {
+  margin: 0.3rem 0;
+  font-size: calc(var(--font-base) * 0.9);
+  color: var(--muted);
+}
+
+/* --------------------------------------------------------------------------
+ * Quiz form
+ * Build a simple vertical list of quiz questions. Use pill buttons for
+ * options. Provide a clearly separated result panel with colour-coded
+ * severity badges.
+ */
+
+.quiz-form {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.quiz-item {
+  background: var(--surface);
+  border: 1px solid #e0edf1;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  padding: 1rem;
+}
+.quiz-item h4 {
+  margin: 0 0 0.5rem;
+  color: var(--brand-medium);
+  font-weight: 600;
+  font-size: calc(var(--font-base) * 0.95);
+}
+.quiz-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.quiz-options label {
+  background: var(--surface-alt);
+  border: 1px solid #d5e3eb;
+  border-radius: 20px;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+  font-size: calc(var(--font-base) * 0.9);
+}
+.quiz-submit {
+  margin-top: 1rem;
+}
+.quiz-result {
+  max-width: 760px;
+  margin: 1rem auto 0;
+  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid #e0edf1;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  border-radius: 20px;
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+ * Contact form
+ * Straightforward form layout with stacked inputs. Increase input padding and
+ * enlarge the font for easier reading. Highlight focus state clearly.
+ */
+
+.contact-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
 .contact-form {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
-
 .form-group {
   display: flex;
   flex-direction: column;
 }
-
 .form-group label {
   margin-bottom: 0.25rem;
   font-weight: 600;
-  color: #2A6071;
+  color: var(--brand-medium);
+  font-size: calc(var(--font-base) * 0.9);
 }
-
 .form-group input,
 .form-group textarea {
-  padding: 0.75rem;
+  padding: 0.8rem;
   border: 1px solid #cfdfe5;
-  border-radius: 4px;
-  font-size: 1rem;
-  font-family: 'Sarabun', sans-serif;
+  border-radius: var(--radius);
+  font-size: calc(var(--font-base) * 0.95);
+  font-family: inherit;
   resize: vertical;
 }
-
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #5EA5B1;
-  box-shadow: 0 0 0 3px rgba(94, 165, 177, 0.2);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(47,167,186,0.2);
 }
 
 .site-footer {
-  background: #2A6071;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-  color: #ffffff;
+  background: var(--brand-medium);
+  color: #fff;
+  padding: 1rem 0;
   text-align: center;
-  font-size: 0.9rem;
+  font-size: calc(var(--font-base) * 0.8);
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .nav {
-    position: fixed;
-    background: #ffffff;
-    top: 0;
-    right: -100%;
-    height: 100%;
-    width: 250px;
-    box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
-    transition: right 0.3s ease;
-    padding-top: 80px;
-    z-index: 999;
-  }
-  .nav.open {
-    right: 0;
-  }
-  .nav ul {
-    flex-direction: column;
-    gap: 1.25rem;
-    padding-left: 1.5rem;
-  }
-  .nav ul li {
-    margin-left: 0;
-  }
-  .nav-toggle {
-    display: block;
-  }
+/* --------------------------------------------------------------------------
+ * Responsive adjustments
+ * Restructure the grid layouts on smaller screens and convert the nav into
+ * a slide-out drawer accessible via a hamburger button.
+ */
+
+@media (max-width: 900px) {
   .hero-inner {
-    flex-direction: column;
+    grid-template-columns: 1fr;
     text-align: center;
-  }
-  .hero-content,
-  .hero-image {
-    flex: 1 1 100%;
   }
   .hero-image {
     margin-top: 2rem;
   }
-
-
+  .nav ul {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    height: 100%;
+    width: 260px;
+    background: var(--surface);
+    box-shadow: -2px 0 6px rgba(0,0,0,0.08);
+    flex-direction: column;
+    gap: 1.25rem;
+    padding-top: 80px;
+    padding-left: 1.5rem;
+    transition: right 0.3s ease;
+    z-index: 999;
+  }
+  .nav.open ul {
+    right: 0;
+  }
+  .nav-toggle {
+    display: block;
+  }
+  .header-container {
+    padding: 0.75rem 0;
+  }
 }

@@ -1,52 +1,37 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>เว็บแอพโรคซึมเศร้า – MindCare</title>
 
   <!-- สไตล์ -->
-  <link rel="stylesheet" href="styles.css">
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet" />
 
-  <!-- LINE Front‑end Framework (LIFF) SDK -->
+  <!-- LIFF -->
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
-const LIFF_ID = "2008065271-BMmpNEZb";
+    const LIFF_ID = "2008065271-BMmpNEZb";
+    async function main () {
+      try {
+        await liff.init({ liffId: LIFF_ID });
+        if (!liff.isLoggedIn()) { liff.login(); return; }
 
-async function main () {
-  try {
-    await liff.init({ liffId: LIFF_ID });
+        const profile = await liff.getProfile();
+        const nameElem = document.getElementById('userName');
+        if (nameElem) nameElem.textContent = profile.displayName;
 
-    if (!liff.isLoggedIn()) {
-      liff.login();
-      return;
+        if (!location.hash) location.hash = '#home';
+      } catch (err) {
+        console.error("LIFF init error:", err);
+      }
     }
-
-    const profile = await liff.getProfile();
-    const nameElem = document.getElementById('userName');
-    if (nameElem) {
-      nameElem.textContent = profile.displayName;
-    }
-
-    // หลังจากล็อกอินสำเร็จ ให้เลื่อนไปยังส่วนหน้าแรก (home)
-    if (window.location.hash !== '#หน้าแรก') {
-      window.location.hash = '#หน้าแรก';
-    }
-
-    console.log("In LINE client? ", liff.isInClient());
-  } catch (err) {
-    console.error("LIFF init error:", err);
-    alert("LIFF init error: " + err.message);
-  }
-}
-
-document.addEventListener('DOMContentLoaded', main);
-</script>
-
+    document.addEventListener('DOMContentLoaded', main);
+  </script>
 </head>
 <body>
-  <!-- ส่วนหัว -->
+  <!-- Header -->
   <header class="site-header">
     <div class="container header-container">
       <div class="logo">MindCare</div>
@@ -57,6 +42,7 @@ document.addEventListener('DOMContentLoaded', main);
           <li><a href="#what">โรคซึมเศร้าคืออะไร</a></li>
           <li><a href="#services">บริการ</a></li>
           <li><a href="#experts">แพทย์ผู้เชี่ยวชาญ</a></li>
+          <li><a href="#quiz">แบบทดสอบ</a></li>
           <li><a href="#help">ขอความช่วยเหลือ</a></li>
           <li><a href="#contact">ติดต่อ</a></li>
         </ul>
@@ -67,33 +53,30 @@ document.addEventListener('DOMContentLoaded', main);
     </div>
   </header>
 
-  <!-- หน้าแรก / hero -->
+  <!-- Hero -->
   <section id="home" class="hero">
     <div class="container hero-inner">
       <div class="hero-content">
         <h1>ดูแลใจคุณ</h1>
         <p>เรียนรู้และเข้าใจเกี่ยวกับโรคซึมเศร้า พร้อมค้นหาการช่วยเหลือที่เหมาะสม</p>
-        <a class="cta-button" href="#help">เริ่มต้นเลย</a>
+        <a class="cta-button" href="#quiz">เริ่มแบบทดสอบ</a>
       </div>
       <div class="hero-image">
-        <img src="ba8f5741-4fe4-42f8-9062-b6a303890d30.png" alt="ภาพประกอบเกี่ยวกับสุขภาพจิต">
+        <!-- ใช้ภาพเดิมของคุณ -->
+        <img src="ba8f5741-4fe4-42f8-9062-b6a303890d30.png" alt="ภาพประกอบสุขภาพจิต">
       </div>
     </div>
   </section>
 
-  <!-- โรคซึมเศร้าคืออะไร -->
+  <!-- What -->
   <section id="what" class="info-section">
     <div class="container">
       <h2>โรคซึมเศร้าคืออะไร</h2>
-      <p>
-        โรคซึมเศร้าเป็นภาวะทางอารมณ์ที่ส่งผลกระทบต่อความรู้สึก ความคิด และการใช้ชีวิตประจำวันของบุคคล
-        ผู้ที่เป็นโรคซึมเศร้ามักรู้สึกเศร้า หดหู่ ไม่มีพลังหรือความสนใจในสิ่งที่เคยชอบอย่างต่อเนื่อง
-        เรามีข้อมูลและทรัพยากรเพื่อช่วยให้คุณเข้าใจโรคซึมเศร้ามากขึ้นและหาทางรับมือได้อย่างเหมาะสม
-      </p>
+      <p>โรคซึมเศร้าเป็นภาวะทางอารมณ์ที่ส่งผลต่อความรู้สึก ความคิด และพฤติกรรมในชีวิตประจำวัน...</p>
     </div>
   </section>
 
-  <!-- บริการ -->
+  <!-- Services -->
   <section id="services" class="info-section light-bg">
     <div class="container">
       <h2>บริการของเรา</h2>
@@ -101,6 +84,7 @@ document.addEventListener('DOMContentLoaded', main);
         <div class="card">
           <h3>แบบทดสอบอาการ</h3>
           <p>ทำแบบทดสอบเพื่อประเมินระดับความเสี่ยงของคุณ</p>
+          <a class="ghost-button" href="#quiz">ทำแบบทดสอบ</a>
         </div>
         <div class="card">
           <h3>แหล่งข้อมูล</h3>
@@ -108,64 +92,79 @@ document.addEventListener('DOMContentLoaded', main);
         </div>
         <div class="card">
           <h3>ชุมชนออนไลน์</h3>
-          <p>เข้าร่วมพูดคุยกับคนอื่นๆ ที่มีประสบการณ์คล้ายกัน</p>
+          <p>พูดคุยแลกเปลี่ยนกับผู้มีประสบการณ์คล้ายกัน</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- แพทย์ผู้เชี่ยวชาญ -->
+  <!-- Experts (รายการแพทย์ 4–5 คน) -->
   <section id="experts" class="info-section">
     <div class="container">
       <h2>แพทย์ผู้เชี่ยวชาญ</h2>
-      <p>
-        เราทำงานร่วมกับแพทย์และผู้เชี่ยวชาญด้านสุขภาพจิตที่พร้อมให้คำปรึกษาและแนวทางการรักษาอย่างมีประสิทธิภาพ
-        คุณสามารถค้นหาและติดต่อผู้เชี่ยวชาญเพื่อรับคำปรึกษาที่ตรงกับความต้องการของคุณได้ที่นี่
-      </p>
+      <p>เลือกแพทย์ที่ต้องการเพื่อดูประวัติและติดต่อ</p>
+
+      <!-- แสดงด้วย JS (จาก script.js) -->
+      <div id="expertsGrid" class="experts-grid" aria-live="polite"></div>
     </div>
   </section>
 
-  <!-- ขอความช่วยเหลือ -->
-  <section id="help" class="info-section light-bg">
+  <!-- Expert Detail (หน้าโปรไฟล์ภายในเพจ) -->
+  <section id="expert-detail" class="info-section hidden">
+    <div class="container">
+      <a class="back-link" href="#experts">← ย้อนกลับ</a>
+      <div id="expertProfile" class="expert-profile"></div>
+    </div>
+  </section>
+
+  <!-- แบบทดสอบ -->
+  <section id="quiz" class="info-section light-bg">
+    <div class="container">
+      <h2>แบบทดสอบประเมินความเสี่ยง</h2>
+      <p>ตอบคำถาม 9 ข้อภายใน 1–2 นาที (ไม่ใช่การวินิจฉัย แนะนำให้ปรึกษาผู้เชี่ยวชาญเสมอ)</p>
+      <form id="quizForm" class="quiz-form"></form>
+      <div id="quizResult" class="quiz-result"></div>
+    </div>
+  </section>
+
+  <!-- Help -->
+  <section id="help" class="info-section">
     <div class="container">
       <h2>ขอความช่วยเหลือ</h2>
-      <p>
-        หากคุณหรือคนที่คุณรักกำลังประสบปัญหาเกี่ยวกับภาวะซึมเศร้า โปรดอย่าลังเลที่จะขอความช่วยเหลือ
-        เรามีบริการปรึกษาออนไลน์ กลุ่มสนับสนุน และสายด่วนฉุกเฉินที่พร้อมให้บริการตลอด 24 ชั่วโมง
-      </p>
+      <p>หากคุณหรือคนใกล้ชิดกำลังลำบาก โปรดติดต่อผู้เชี่ยวชาญหรือสายด่วนฉุกเฉิน</p>
     </div>
   </section>
 
-  <!-- ติดต่อ -->
+  <!-- Contact -->
   <section id="contact" class="info-section">
     <div class="container contact-container">
       <h2>ติดต่อเรา</h2>
       <form id="contactForm" class="contact-form">
         <div class="form-group">
           <label for="name">ชื่อ</label>
-          <input type="text" id="name" name="name" placeholder="กรอกชื่อของคุณ" required>
+          <input id="name" name="name" required placeholder="กรอกชื่อของคุณ"/>
         </div>
         <div class="form-group">
           <label for="email">อีเมล</label>
-          <input type="email" id="email" name="email" placeholder="example@email.com" required>
+          <input type="email" id="email" name="email" required placeholder="example@email.com"/>
         </div>
         <div class="form-group">
           <label for="message">ข้อความ</label>
-          <textarea id="message" name="message" rows="4" placeholder="คุณต้องการบอกอะไรกับเรา?" required></textarea>
+          <textarea id="message" name="message" rows="4" required placeholder="คุณต้องการบอกอะไรกับเรา?"></textarea>
         </div>
         <button type="submit" class="cta-button">ส่งข้อความ</button>
       </form>
     </div>
   </section>
 
-  <!-- ส่วนท้าย -->
+  <!-- Footer -->
   <footer class="site-footer">
     <div class="container">
-      <p>&copy; 2025 MindCare. All rights reserved.</p>
+      <p>&copy; 2025 MindCare. All rights reserved.</p>
     </div>
   </footer>
 
-  <!-- สคริปต์สำหรับเมนูและฟอร์ม -->
+  <!-- Scripts -->
   <script src="script.js"></script>
 </body>
 </html>
