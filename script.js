@@ -14,19 +14,25 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   document.querySelectorAll('a[href^="#"]').forEach(a => {
-    a.addEventListener('click', function (e) {
-      const href = this.getAttribute('href');
-      if (href === '#') return;
-      e.preventDefault();
-      const id = href.substring(1);
-      const target = document.getElementById(id);
-      if (!target) { location.hash = href; return; }
+  a.addEventListener('click', function (e) {
+    const href = this.getAttribute('href');
+    if (href === '#') return;
+    e.preventDefault();
+
+    // ✅ เปลี่ยน hash เสมอ เพื่อให้ router สลับหน้าได้
+    location.hash = href;
+
+    // สกรอลล์ถ้ามี element เป้าหมาย
+    const id = href.substring(1);
+    const target = document.getElementById(id);
+    if (target) {
       const headerH = document.querySelector('.site-header').offsetHeight;
       const top = target.getBoundingClientRect().top + window.pageYOffset - headerH;
       window.scrollTo({ top, behavior: 'smooth' });
-      nav.classList.remove('open'); navToggle.classList.remove('open');
-    });
+    }
   });
+});
+
 
   const contactForm = document.getElementById('contactForm');
   if (contactForm) {
