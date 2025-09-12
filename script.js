@@ -46,76 +46,86 @@ document.addEventListener('DOMContentLoaded', function () {
   buildQuiz();
 });
 
-// ====== ข้อมูลแพทย์ (รูปใช้ SVG data URI ให้พร้อมใช้งาน) ======
+// ====== ข้อมูลแพทย์ (อัปเดตชื่อจริง + ใช้ไฟล์รูปที่อัปโหลด) ======
 const EXPERTS = [
   {
-    id: 'montien-surgeon',
-    name: 'นพ. มนต์เทียน มุรุตรกุล',
-    role: 'ศัลยแพทย์ทางเดินอาหาร',
-    phone: '02-123-4567',
-    email: 'montien@mindcare.example',
-    photo: svgAvatar('#6fc3c8','MT'),
+    id: 'sutthi-psy',
+    name: 'นพ. สุทธิ ศฤงคไพบูลย์',
+    role: 'จิตแพทย์ผู้ใหญ่',
+    phone: '02-111-1001',
+    email: 'sutthi@mindcare.example',
+    photo: '5930a5fa-49bc-4ae2-9763-284a4c80c631.png',
     education: [
-      'วทบ.(แพทย์) จุฬาลงกรณ์มหาวิทยาลัย',
-      'Laparoscopic & Endoscopic Surgery – Leeds, UK',
-      'Cancer Treatment Course – NCI Tokyo, Japan'
+      'แพทยศาสตรบัณฑิต วิทยาลัยแพทยศาสตร์พระมงกุฎเกล้า',
+      'วุฒิบัตรสาขาจิตเวชศาสตร์ ศิริราชพยาบาล'
     ],
-    memberships: ['ราชวิทยาลัยศัลยแพทย์แห่งประเทศไทย','สมาคมศัลยแพทย์ทางเดินอาหารไทย'],
-    publications: [
-      'Pancreatic Solid-Cystic Papillary Tumor: Case report',
-      'Endoscopic drainage of pancreatic pseudocysts'
-    ],
+    memberships: ['สมาคมจิตแพทย์แห่งประเทศไทย'],
+    publications: ['แนวทางการดูแลผู้ป่วยซึมเศร้าในผู้ใหญ่ (case/clinical focus)'],
     hours: 'จันทร์–ศุกร์ 08:00–17:00'
   },
   {
-    id: 'piyanuch-psy',
-    name: 'พญ. ปิยนุช จิตเวช',
+    id: 'apisamai-psy',
+    name: 'พญ. อภิสมัย ศรีรังสรรค์',
     role: 'จิตแพทย์ผู้ใหญ่',
-    phone: '02-234-5678',
-    email: 'piyanuch@mindcare.example',
-    photo: svgAvatar('#87d4cf','PJ'),
-    education: ['แพทยศาสตร์ มหิดล','วุฒิบัตรจิตเวชศาสตร์ผู้ใหญ่'],
+    phone: '02-111-1002',
+    email: 'apisamai@mindcare.example',
+    photo: 'e5039522-2df6-42b5-8d23-c5ceb3eb95ae.png',
+    education: [
+      'แพทยศาสตรบัณฑิต มหาวิทยาลัยขอนแก่น',
+      'วุฒิบัตรสาขาจิตเวชศาสตร์ ศิริราชพยาบาล'
+    ],
     memberships: ['สมาคมจิตแพทย์แห่งประเทศไทย'],
-    publications: ['Cognitive therapy outcomes in depression'],
+    publications: ['ภาวะซึมเศร้าและสุขภาพจิตสตรี'],
     hours: 'อังคาร–เสาร์ 10:00–18:00'
   },
   {
-    id: 'thanee-child',
-    name: 'นพ. ธเนศ เด็กและวัยรุ่น',
-    role: 'จิตแพทย์เด็กและวัยรุ่น',
-    phone: '02-345-6789',
-    email: 'thanee@mindcare.example',
-    photo: svgAvatar('#a0d3f2','TN'),
-    education: ['แพทยศาสตร์ เชียงใหม่','อนุสาขาจิตเวชเด็กและวัยรุ่น'],
-    memberships: ['สมาคมจิตเวชเด็กและวัยรุ่นไทย'],
-    publications: ['Screen time & mood in adolescents'],
+    id: 'jitarin-psy',
+    name: 'นพ. จิตริน ใจดี',
+    role: 'จิตแพทย์ผู้ใหญ่',
+    phone: '02-111-1003',
+    email: 'jitarin@mindcare.example',
+    photo: 'ef199eb3-0f60-4d2d-ae5a-71d802cbe06a.png',
+    education: [
+      'แพทยศาสตรบัณฑิต มหาวิทยาลัยสงขลานครินทร์',
+      'วุฒิบัตรสาขาจิตเวชศาสตร์ สถาบันจิตเวชศาสตร์สมเด็จเจ้าพระยา'
+    ],
+    memberships: ['สมาคมจิตแพทย์แห่งประเทศไทย'],
+    publications: ['การสื่อสารกับผู้ป่วยซึมเศร้าในคลินิกทั่วไป'],
     hours: 'พุธ–อาทิตย์ 09:00–17:00'
   },
   {
-    id: 'suda-therapy',
-    name: 'พญ. สุดา บำบัด',
-    role: 'นักจิตวิทยาคลินิก/CBT',
-    phone: '02-456-7890',
-    email: 'suda@mindcare.example',
-    photo: svgAvatar('#6fbad9','SD'),
-    education: ['จิตวิทยาคลินิก มศว','CBT Practitioner Certificate'],
-    memberships: ['สมาคมจิตวิทยาคลินิกไทย'],
-    publications: ['Brief CBT for primary care'],
-    hours: 'จันทร์–ศุกร์ 11:00–19:00'
+    id: 'kamonnet-psy',
+    name: 'รศ.พญ. กมลเนตร วรรณเสวก',
+    role: 'อาจารย์จิตเวชศาสตร์ (โรคซึมเศร้า/จิตเวชทั่วไป)',
+    phone: '02-111-1004',
+    email: 'kamonnet@mindcare.example',
+    photo: '498dcf61-2887-4516-a0db-1110c9f8e837.png',
+    education: [
+      'แพทยศาสตรบัณฑิต ศิริราชพยาบาล',
+      'วุฒิบัตรสาขาจิตเวชศาสตร์'
+    ],
+    memberships: ['ภาควิชาจิตเวชศาสตร์ คณะแพทยศาสตร์ศิริราชพยาบาล'],
+    publications: ['การวินิจฉัยและการรักษาโรคกลุ่มอารมณ์'],
+    hours: 'จันทร์–ศุกร์ 08:30–16:30'
   },
   {
-    id: 'arisa-neuro',
-    name: 'พญ. อริสา ประสาทวิทยา',
-    role: 'ประสาทแพทย์',
-    phone: '02-567-8901',
-    email: 'arisa@mindcare.example',
-    photo: svgAvatar('#79c2a0','AR'),
-    education: ['แพทยศาสตร์ ศิริราช','ประสาทวิทยา รามาธิบดี'],
-    memberships: ['ราชวิทยาลัยอายุรแพทย์ฯ'],
-    publications: ['Neurobiology of mood disorders'],
+    id: 'pornjira-psy',
+    name: 'รศ.พญ. พรจิรา ปริวัชรากุล',
+    role: 'ผู้เชี่ยวชาญกลุ่มโรคอารมณ์ (Mood Disorders)',
+    phone: '02-111-1005',
+    email: 'pornjira@mindcare.example',
+    photo: '0a607545-4f88-4f17-b909-7dc163622d80.png',
+    education: [
+      'แพทยศาสตรบัณฑิต',
+      'วุฒิบัตรสาขาจิตเวชศาสตร์',
+      'MSc Clinical Neuroscience – King’s College London'
+    ],
+    memberships: ['ภาควิชาจิตเวชศาสตร์ คณะแพทยศาสตร์ศิริราชพยาบาล'],
+    publications: ['Psychopharmacology & Mood Disorders (clinical focus)'],
     hours: 'อังคาร–เสาร์ 08:30–16:30'
   }
 ];
+
 
 // helper: สร้างรูปโปรไฟล์ SVG พร้อมตัวอักษรย่อ
 function svgAvatar(color, initials){
