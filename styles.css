@@ -384,6 +384,64 @@ h3{font-size:1.25rem;font-weight:700}
   border-color:var(--color-accent);box-shadow:0 0 0 4px rgba(94,165,177,.18);
 
 }
+/* Help */
+.help-section {
+  padding: 2rem 1rem;
+  text-align: center;
+  background: #fdfefe;
+}
+.help-section h2 {
+  color: #0e5766;
+  margin-bottom: .3rem;
+}
+.sub {
+  margin-bottom: 2rem;
+  color: #555;
+  font-size: 1rem;
+}
+.help-cards {
+  display: flex;
+  justify-content: center;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+}
+.help-card {
+  background: #fff;
+  border: 1px solid #e1e6e8;
+  border-radius: 14px;
+  padding: 1rem 1.5rem;
+  width: 280px;
+  text-align: left;
+  transition: transform .3s, box-shadow .3s;
+  cursor: pointer;
+}
+.help-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+.help-card h3 {
+  margin-top: 0;
+  color: #0e5766;
+}
+.help-card ul {
+  padding-left: 1rem;
+  margin: 0.5rem 0 0;
+}
+.help-card li {
+  margin: .4rem 0;
+}
+.help-card a {
+  color: #0e5766;
+  font-weight: 600;
+  text-decoration: none;
+}
+.help-card a:hover {
+  text-decoration: underline;
+}
+.urgent {
+  border: 2px solid #c03636;
+  background: #fff6f6;
+}
 
 
 

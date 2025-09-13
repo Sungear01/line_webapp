@@ -532,3 +532,19 @@ function svgAvatar(color, initials){
   );
   return `data:image/svg+xml;charset=utf-8,${svg}`;
 }
+// แสดงค่า radius แบบสด
+const radius = document.getElementById('searchRadius');
+const radiusLabel = document.getElementById('radiusLabel');
+if (radius && radiusLabel) {
+  const sync = () => radiusLabel.textContent = `รัศมีค้นหา: ${radius.value} กม.`;
+  radius.addEventListener('input', sync);
+  sync();
+}
+//เพิ่มลูกเล่นเล็กๆ (JS – bounce ตอนคลิก)
+document.querySelectorAll('.help-card').forEach(card=>{
+  card.addEventListener('click', ()=>{
+    card.style.transform = "scale(0.95)";
+    setTimeout(()=> card.style.transform = "", 150);
+  });
+});
+
