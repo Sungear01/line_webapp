@@ -1,58 +1,75 @@
 /*
- * เพิ่มฟีเจอร์: Experts Grid + Expert Detail + Quiz
- * รวมกับสคริปต์เดิม (เมนู, smooth-scroll, contact form)
+ * MindCare App – Navigation + Experts + Expert Detail + Quiz + Hospital Finder
+ * - รวม listener เหลือครั้งเดียว
+ * - แก้ main ที่ไม่ถูกประกาศ
+ * - กัน null element
+ * - ปรับ Google Maps URL
+ * - Hospital finder ใช้ Leaflet + ระยะ 5–50 กม.
  */
 
-// ====== เมนูมือถือ + Smooth scroll + ฟอร์ม (เดิม) ======
-document.addEventListener('DOMContentLoaded', function () {
+// ---------------------- Boot ----------------------
+document.addEventListener('DOMContentLoaded', () => {
+  // เมนู/สกรอลล์/ฟอร์ม
+  setupNavigation();
+  setupContactForm();
+
+  // Experts & Quiz
+  buildExpertsGrid();
+  buildQuiz();
+
+  // Router เริ่มต้น + เมื่อ hash เปลี่ยน
+  routeByHash();
+  window.addEventListener('hashchange', routeByHash);
+
+  // Hospital Finder
+  setupHospitalFinder();
+});
+
+// ---------------------- Navigation / Smooth scroll / Form ----------------------
+function setupNavigation() {
   const navToggle = document.getElementById('navToggle');
   const nav = document.getElementById('mainNav');
 
-  navToggle.addEventListener('click', function () {
-    nav.classList.toggle('open');
-    navToggle.classList.toggle('open');
-  });
-
-  document.querySelectorAll('a[href^="#"]').forEach(a => {
-  a.addEventListener('click', function (e) {
-    const href = this.getAttribute('href');
-    if (href === '#') return;
-    e.preventDefault();
-
-    // ✅ เปลี่ยน hash เสมอ เพื่อให้ router สลับหน้าได้
-    location.hash = href;
-
-    // สกรอลล์ถ้ามี element เป้าหมาย
-    const id = href.substring(1);
-    const target = document.getElementById(id);
-    if (target) {
-      const headerH = document.querySelector('.site-header').offsetHeight;
-      const top = target.getBoundingClientRect().top + window.pageYOffset - headerH;
-      window.scrollTo({ top, behavior: 'smooth' });
-    }
-  });
-});
-
-
-  const contactForm = document.getElementById('contactForm');
-  if (contactForm) {
-    contactForm.addEventListener('submit', e => {
-      e.preventDefault();
-      alert('ขอบคุณสำหรับข้อความของคุณ! เราจะติดต่อกลับโดยเร็วที่สุด');
-      contactForm.reset();
+  if (navToggle && nav) {
+    navToggle.addEventListener('click', () => {
+      nav.classList.toggle('open');
+      navToggle.classList.toggle('open');
     });
   }
 
-  // ====== สร้างรายการแพทย์ ======
-  buildExpertsGrid();
-  routeByHash();        // initial route
-  window.addEventListener('hashchange', routeByHash);
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const href = a.getAttribute('href');
+      if (!href || href === '#') return;
+      e.preventDefault();
 
-  // ====== สร้างแบบทดสอบ ======
-  buildQuiz();
-});
+      // เปลี่ยน hash เสมอ เพื่อให้ router ทำงาน
+      location.hash = href;
 
-// ====== ข้อมูลแพทย์ (อัปเดตชื่อจริง + ใช้ไฟล์รูปที่อัปโหลด) ======
+      // smooth-scroll ถ้ามี element เป้าหมาย
+      const id = href.substring(1);
+      const target = document.getElementById(id);
+      if (target) {
+        const header = document.querySelector('.site-header');
+        const headerH = header ? header.offsetHeight : 0;
+        const top = target.getBoundingClientRect().top + window.pageYOffset - headerH;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    });
+  });
+}
+
+function setupContactForm() {
+  const contactForm = document.getElementById('contactForm');
+  if (!contactForm) return;
+  contactForm.addEventListener('submit', e => {
+    e.preventDefault();
+    alert('ขอบคุณสำหรับข้อความของคุณ! เราจะติดต่อกลับโดยเร็วที่สุด');
+    contactForm.reset();
+  });
+}
+
+// ---------------------- Experts ----------------------
 const EXPERTS = [
   {
     id: 'sutthi-psy',
@@ -132,27 +149,9 @@ const EXPERTS = [
   }
 ];
 
-
-// helper: สร้างรูปโปรไฟล์ SVG พร้อมตัวอักษรย่อ
-function svgAvatar(color, initials){
-  const svg = encodeURIComponent(
-    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'>
-      <defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
-        <stop offset='0%' stop-color='${color}'/><stop offset='100%' stop-color='#ffffff33'/>
-      </linearGradient></defs>
-      <rect width='200' height='200' rx='24' fill='url(#g)'/>
-      <circle cx='100' cy='80' r='40' fill='#ffffffcc'/>
-      <rect x='40' y='120' width='120' height='50' rx='25' fill='#ffffffcc'/>
-      <text x='100' y='98' font-size='42' text-anchor='middle' fill='#134b5b' font-family='Sarabun, sans-serif' font-weight='700'>${initials}</text>
-    </svg>`
-  );
-  return `data:image/svg+xml;charset=utf-8,${svg}`;
-}
-
-// วาดกริดแพทย์
-function buildExpertsGrid(){
+function buildExpertsGrid() {
   const grid = document.getElementById('expertsGrid');
-  if(!grid) return;
+  if (!grid) return;
   grid.innerHTML = EXPERTS.map(doc => `
     <article class="expert-card" data-id="${doc.id}">
       <img class="expert-photo" src="${doc.photo}" alt="${doc.name}">
@@ -164,25 +163,27 @@ function buildExpertsGrid(){
     </article>
   `).join('');
 
-  grid.querySelectorAll('.expert-card').forEach(card=>{
-    card.addEventListener('click',()=>{
+  grid.querySelectorAll('.expert-card').forEach(card => {
+    card.addEventListener('click', () => {
       const id = card.getAttribute('data-id');
       location.hash = `#expert-detail/${id}`;
     });
   });
 }
 
-// เรนเดอร์หน้าโปรไฟล์แพทย์
-function renderExpertDetail(id){
+function renderExpertDetail(id) {
   const secGrid = document.getElementById('experts');
   const secDetail = document.getElementById('expert-detail');
-  if(!secGrid || !secDetail) return;
+  if (!secGrid || !secDetail) return;
 
-  const doc = EXPERTS.find(d=>d.id===id);
-  if(!doc){
-    secDetail.querySelector('#expertProfile').innerHTML = `<p>ไม่พบข้อมูลแพทย์</p>`;
+  const doc = EXPERTS.find(d => d.id === id);
+  const box = secDetail.querySelector('#expertProfile');
+  if (!box) return;
+
+  if (!doc) {
+    box.innerHTML = `<p>ไม่พบข้อมูลแพทย์</p>`;
   } else {
-    secDetail.querySelector('#expertProfile').innerHTML = `
+    box.innerHTML = `
       <img class="profile-photo" src="${doc.photo}" alt="${doc.name}">
       <div class="profile-block">
         <h2 style="margin-top:0">${doc.name}</h2>
@@ -201,33 +202,30 @@ function renderExpertDetail(id){
     `;
   }
 
-  // แสดง/ซ่อนส่วนที่เกี่ยวข้อง
   secGrid.classList.add('hidden');
   secDetail.classList.remove('hidden');
 }
 
-// simple hash router
-function routeByHash(){
+function routeByHash() {
   const hash = location.hash || '#home';
   const match = hash.match(/^#expert-detail\/(.+)$/);
   const secGrid = document.getElementById('experts');
   const secDetail = document.getElementById('expert-detail');
 
-  if (match){
+  if (match) {
     renderExpertDetail(match[1]);
     return;
   }
-  // กลับไปกริดแพทย์เมื่อไม่อยู่ที่โปรไฟล์
-  if (secGrid && secDetail){
+  if (secGrid && secDetail) {
     secGrid.classList.remove('hidden');
     secDetail.classList.add('hidden');
   }
 }
 
-// ====== แบบทดสอบสั้น 9 ข้อ (0–3) ======
-function buildQuiz(){
+// ---------------------- Quiz ----------------------
+function buildQuiz() {
   const form = document.getElementById('quizForm');
-  if(!form) return;
+  if (!form) return;
 
   const QUESTIONS = [
     'รู้สึกเบื่อ/ไม่สนใจสิ่งที่เคยชอบ',
@@ -257,25 +255,27 @@ function buildQuiz(){
     <button class="cta-button quiz-submit" type="submit">ดูผลลัพธ์</button>
   `;
 
-  form.addEventListener('submit', e=>{
+  form.addEventListener('submit', e => {
     e.preventDefault();
     const data = new FormData(form);
     let score = 0;
-    for (let i=0;i<QUESTIONS.length;i++){
+    for (let i = 0; i < QUESTIONS.length; i++) {
       score += Number(data.get(`q${i}`) || 0);
     }
     showQuizResult(score);
   });
 }
 
-function showQuizResult(score){
+function showQuizResult(score) {
   const box = document.getElementById('quizResult');
-  let level, advice, color='#e8f6f7', text='#0e5766';
-  if (score<=4){ level='ต่ำมาก'; advice='เฝ้าสังเกตอารมณ์ตนเองต่อเนื่อง';}
-  else if (score<=9){ level='ต่ำ'; advice='ดูแลตนเอง พักผ่อน ออกกำลัง หากไม่ดีขึ้นควรปรึกษาผู้เชี่ยวชาญ';}
-  else if (score<=14){ level='ปานกลาง'; advice='แนะนำให้พบผู้เชี่ยวชาญเพื่อประเมินเพิ่มเติม'; color='#fff3cd'; text='#7a5a00';}
-  else if (score<=19){ level='ค่อนข้างสูง'; advice='ควรนัดหมายพบแพทย์/นักจิตวิทยาเร็วที่สุด'; color='#ffe3e3'; text='#7a0b0b';}
-  else { level='สูงมาก'; advice='กรุณาติดต่อสายด่วน/ไปโรงพยาบาลทันที หากมีความคิดทำร้ายตนเอง'; color='#ffd7d7'; text='#6a0000';}
+  if (!box) return;
+
+  let level, advice, color = '#e8f6f7', text = '#0e5766';
+  if (score <= 4) { level = 'ต่ำมาก'; advice = 'เฝ้าสังเกตอารมณ์ตนเองต่อเนื่อง'; }
+  else if (score <= 9) { level = 'ต่ำ'; advice = 'ดูแลตนเอง พักผ่อน ออกกำลัง หากไม่ดีขึ้นควรปรึกษาผู้เชี่ยวชาญ'; }
+  else if (score <= 14) { level = 'ปานกลาง'; advice = 'แนะนำให้พบผู้เชี่ยวชาญเพื่อประเมินเพิ่มเติม'; color = '#fff3cd'; text = '#7a5a00'; }
+  else if (score <= 19) { level = 'ค่อนข้างสูง'; advice = 'ควรนัดหมายพบแพทย์/นักจิตวิทยาเร็วที่สุด'; color = '#ffe3e3'; text = '#7a0b0b'; }
+  else { level = 'สูงมาก'; advice = 'กรุณาติดต่อสายด่วน/ไปโรงพยาบาลทันที หากมีความคิดทำร้ายตนเอง'; color = '#ffd7d7'; text = '#6a0000'; }
 
   box.innerHTML = `
     <div style="background:${color};border-radius:12px;padding:1rem">
@@ -283,7 +283,252 @@ function showQuizResult(score){
       <p><span class="badge" style="background:#134b5b;color:#fff">${level}</span></p>
       <p style="color:${text}">${advice}</p>
       <p style="font-size:.9rem;opacity:.8">* แบบทดสอบนี้ไม่ใช่การวินิจฉัยทางการแพทย์</p>
-      <p><a class="ghost-button" href="#experts">ค้นหาแพทย์ผู้เชี่ยวชาญ</a></p>
+      <p><a class="ghost-button" href="#hospitals">หาโรงพยาบาลใกล้ฉัน</a></p>
     </div>
   `;
+}
+
+// ---------------------- Hospital Finder (Leaflet) ----------------------
+let map;
+let userLocation = null;
+
+// ข้อมูลตัวอย่าง (แก้ชื่อให้ถูก: บำรุงราษฎร์)
+const sampleHospitals = [
+  {
+    name: "โรงพยาบาลศิริราช",
+    lat: 13.7589, lng: 100.4894,
+    address: "2 ถนนวังหลัง เขตบางกอกน้อย กรุงเทพฯ",
+    phone: "02-419-7000", type: "โรงพยาบาลรัฐ"
+  },
+  {
+    name: "โรงพยาบาลจุฬาลงกรณ์",
+    lat: 13.7372, lng: 100.5326,
+    address: "1873 ถนนพระราม 4 ปทุมวัน กรุงเทพฯ",
+    phone: "02-256-4000", type: "โรงพยาบาลรัฐ"
+  },
+  {
+    name: "โรงพยาบาลรามาธิบดี",
+    lat: 13.7594, lng: 100.5252,
+    address: "270 ถนนราชวิถี เขตราชเทวี กรุงเทพฯ",
+    phone: "02-201-1000", type: "โรงพยาบาลรัฐ"
+  },
+  {
+    name: "โรงพยาบาลสมิติเวช",
+    lat: 13.7245, lng: 100.5668,
+    address: "133 ถนนสุขุมวิท 49 เขตวัฒนา กรุงเทพฯ",
+    phone: "02-022-2222", type: "โรงพยาบาลเอกชน"
+  },
+  {
+    name: "โรงพยาบาลกรุงเทพ",
+    lat: 13.7373, lng: 100.5445,
+    address: "2 ซอยศูนย์วิจัย ถนนเพชรบุรีตัดใหม่ ห้วยขวาง กรุงเทพฯ",
+    phone: "1719", type: "โรงพยาบาลเอกชน"
+  },
+  {
+    name: "โรงพยาบาลบำรุงราษฎร์",
+    lat: 13.7442, lng: 100.5565,
+    address: "33 ถนนสุขุมวิท เขตวัฒนา กรุงเทพฯ",
+    phone: "1378", type: "โรงพยาบาลเอกชน"
+  }
+];
+
+function setupHospitalFinder() {
+  const hospitalsSection = document.getElementById('hospitals');
+  const mapBox = document.getElementById('hospitalMap');
+  const btn = document.getElementById('findLocationBtn');
+  const radiusInput = document.getElementById('searchRadius');
+
+  if (!hospitalsSection || !mapBox) return;
+
+  // สร้างแผนที่เมื่อส่วน hospitals โผล่บนหน้าจอ (ช่วยประหยัด)
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !map) {
+        setTimeout(initMap, 80);
+      }
+    });
+  });
+  observer.observe(hospitalsSection);
+
+  if (btn) btn.addEventListener('click', findUserLocation);
+
+  if (radiusInput) {
+    let t;
+    radiusInput.addEventListener('input', () => {
+      // debounce 250ms
+      clearTimeout(t);
+      t = setTimeout(() => {
+        if (userLocation) findNearbyHospitals();
+      }, 250);
+    });
+    radiusInput.addEventListener('change', () => {
+      if (userLocation) findNearbyHospitals();
+    });
+  }
+}
+
+function initMap() {
+  // ต้องมี Leaflet CSS/JS โหลดไว้ในหน้า HTML
+  // <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  // <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  map = L.map('hospitalMap').setView([13.7563, 100.5018], 11);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
+
+  // หมุดตัวอย่าง
+  sampleHospitals.forEach(h => {
+    L.marker([h.lat, h.lng]).addTo(map).bindPopup(`
+      <strong>${h.name}</strong><br>
+      ${h.address}<br>
+      โทร: ${h.phone}<br>
+      ประเภท: ${h.type}
+    `);
+  });
+}
+
+function calculateDistance(lat1, lng1, lat2, lng2) {
+  const R = 6371; // km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat/2)**2 +
+            Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) *
+            Math.sin(dLng/2)**2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
+}
+
+function findUserLocation() {
+  const btn = document.getElementById('findLocationBtn');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'กำลังค้นหา...';
+  }
+
+  if (!navigator.geolocation) {
+    showError('เบราว์เซอร์นี้ไม่รองรับการหาตำแหน่ง');
+    if (btn) { btn.disabled = false; btn.textContent = 'ค้นหาตำแหน่งปัจจุบัน'; }
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+
+      if (map) {
+        map.setView([userLocation.lat, userLocation.lng], 13);
+        L.marker([userLocation.lat, userLocation.lng], {
+          icon: L.icon({
+            iconUrl: 'data:image/svg+xml;base64,' + btoa(`
+              <svg width="25" height="25" viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12.5" cy="12.5" r="8" fill="#ff4444" stroke="white" stroke-width="3"/>
+                <circle cx="12.5" cy="12.5" r="3" fill="white"/>
+              </svg>
+            `),
+            iconSize: [25, 25],
+            iconAnchor: [12.5, 12.5]
+          })
+        }).addTo(map).bindPopup('ตำแหน่งปัจจุบันของคุณ');
+      }
+
+      findNearbyHospitals();
+
+      if (btn) { btn.disabled = false; btn.textContent = 'ค้นหาตำแหน่งปัจจุบัน'; }
+    },
+    err => {
+      const code = err && err.code;
+      let msg = 'ไม่สามารถหาตำแหน่งได้';
+      if (code === err.PERMISSION_DENIED) msg = 'การเข้าถึงตำแหน่งถูกปฏิเสธ กรุณาอนุญาตการเข้าถึงตำแหน่ง';
+      else if (code === err.POSITION_UNAVAILABLE) msg = 'ข้อมูลตำแหน่งไม่พร้อมใช้งาน';
+      else if (code === err.TIMEOUT) msg = 'การค้นหาตำแหน่งใช้เวลานานเกินไป';
+      showError(msg);
+      if (btn) { btn.disabled = false; btn.textContent = 'ค้นหาตำแหน่งปัจจุบัน'; }
+    },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+  );
+}
+
+function findNearbyHospitals() {
+  if (!userLocation) return;
+  const radiusEl = document.getElementById('searchRadius');
+  const radius = radiusEl ? parseInt(radiusEl.value, 10) : 10;
+
+  const nearby = sampleHospitals
+    .map(h => ({ ...h, distance: calculateDistance(userLocation.lat, userLocation.lng, h.lat, h.lng) }))
+    .filter(h => h.distance <= radius)
+    .sort((a, b) => a.distance - b.distance);
+
+  displayHospitals(nearby);
+}
+
+function displayHospitals(hospitals) {
+  const results = document.getElementById('hospitalResults');
+  if (!results) return;
+
+  if (!hospitals.length) {
+    results.innerHTML = `
+      <div class="loading-spinner">
+        ไม่พบโรงพยาบาลในรัศมีที่กำหนด กรุณาขยายรัศมีการค้นหา
+      </div>
+    `;
+    return;
+  }
+
+  results.innerHTML = hospitals.map(h => `
+    <div class="hospital-item" onclick="window.focusHospital(${h.lat}, ${h.lng})">
+      <div class="hospital-name">${h.name}</div>
+      <div class="hospital-distance">${h.distance.toFixed(1)} กม. จากคุณ</div>
+      <div class="hospital-address">${h.address}</div>
+      <div class="hospital-actions">
+        <button class="hospital-action" onclick="event.stopPropagation(); window.callHospital('${h.phone}')">
+          โทร ${h.phone}
+        </button>
+        <button class="hospital-action secondary" onclick="event.stopPropagation(); window.openMaps(${h.lat}, ${h.lng}, '${h.name.replace(/'/g, "\\'")}')">
+          นำทาง
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function showError(message) {
+  const results = document.getElementById('hospitalResults');
+  if (results) {
+    results.innerHTML = `<div class="error-message">${message}</div>`;
+  } else {
+    alert(message);
+  }
+}
+
+// ฟังก์ชันที่เรียกจาก HTML ต้องอยู่บน window
+window.focusHospital = function(lat, lng) {
+  if (map) map.setView([lat, lng], 15);
+};
+
+window.callHospital = function(phone) {
+  // โทรตรง: ทำงานบนมือถือ/เบราว์เซอร์ที่รองรับ
+  window.location.href = `tel:${phone}`;
+};
+
+window.openMaps = function(lat, lng, name) {
+  // ใช้พิกัดเป็นหลัก + ใส่ query ชื่อสถานที่เพื่ออ่านง่าย
+  const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&destination_place_id=&travelmode=driving&query=${encodeURIComponent(name)}`;
+  window.open(url, '_blank');
+};
+
+// ---------------------- (Optional) Avatar helper ถ้าจำเป็น ----------------------
+function svgAvatar(color, initials){
+  const svg = encodeURIComponent(
+    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'>
+      <defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
+        <stop offset='0%' stop-color='${color}'/><stop offset='100%' stop-color='#ffffff33'/>
+      </linearGradient></defs>
+      <rect width='200' height='200' rx='24' fill='url(#g)'/>
+      <circle cx='100' cy='80' r='40' fill='#ffffffcc'/>
+      <rect x='40' y='120' width='120' height='50' rx='25' fill='#ffffffcc'/>
+      <text x='100' y='98' font-size='42' text-anchor='middle' fill='#134b5b' font-family='Sarabun, sans-serif' font-weight='700'>${initials}</text>
+    </svg>`
+  );
+  return `data:image/svg+xml;charset=utf-8,${svg}`;
 }

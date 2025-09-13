@@ -8,9 +8,13 @@
   <!-- โหลดไฟล์สไตล์พร้อมเวอร์ชันกันแคช -->
   <link rel="stylesheet" href="styles.css?v=20250911" />
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <!-- LIFF SDK -->
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  
+  <!----
   <script>
     const LIFF_ID = "2008065271-BMmpNEZb";
 
@@ -40,6 +44,7 @@
 
     document.addEventListener('DOMContentLoaded', main);
   </script>
+-->
 
   <!-- สคริปต์ของคุณ พร้อมเวอร์ชันกันแคช -->
   <script defer src="script.js?v=20250911"></script>
@@ -57,6 +62,7 @@
           <li><a href="#home">หน้าแรก</a></li>
           <li><a href="#what">โรคซึมเศร้าคืออะไร</a></li>
           <li><a href="#services">บริการ</a></li>
+          <li><a href="#hospitals">โรงพยาบาลใกล้ฉัน</a></li>
           <li><a href="#experts">แพทย์ผู้เชี่ยวชาญ</a></li>
           <li><a href="#quiz">แบบทดสอบ</a></li>
           <li><a href="#help">ขอความช่วยเหลือ</a></li>
@@ -103,12 +109,14 @@
           <a class="ghost-button" href="#quiz">ทำแบบทดสอบ</a>
         </div>
         <div class="card">
-          <h3>แหล่งข้อมูล</h3>
-          <p>อ่านบทความและคำแนะนำในการดูแลจิตใจ</p>
+          <h3>โรงพยาบาลใกล้ฉัน</h3>
+          <p>ค้นหาโรงพยาบาลและคลินิกใกล้เคียงที่มีบริการสุขภาพจิต</p>
+          <a class="ghost-button" href="#hospitals">ค้นหาโรงพยาบาล</a>
         </div>
         <div class="card">
-          <h3>ชุมชนออนไลน์</h3>
-          <p>พูดคุยแลกเปลี่ยนกับผู้มีประสบการณ์คล้ายกัน</p>
+           <h3>แพทย์ผู้เชี่ยวชาญ</h3>
+          <p>พบกับจิตแพทย์และผู้เชี่ยวชาญด้านสุขภาพจิต</p>
+          <a class="ghost-button" href="#experts">ดูแพทย์</a>
         </div>
       </div>
     </div>
@@ -142,6 +150,45 @@
       <div id="quizResult" class="quiz-result"></div>
     </div>
   </section>
+
+ <!-- Hospital Finder -->
+  <section id="hospitals" class="info-section hospital-finder">
+    <div class="container">
+      <h2>โรงพยาบาลใกล้ฉัน</h2>
+      <p>ค้นหาโรงพยาบาลและคลินิกที่มีบริการสุขภาพจิตใกล้ตำแหน่งของคุณ</p>
+      
+      <div class="hospital-controls">
+        <button class="location-button" id="findLocationBtn">
+          ค้นหาตำแหน่งปัจจุบัน
+        </button>
+        <div class="radius-selector">
+          <label for="searchRadius">รัศมีการค้นหา:</label>
+          <select id="searchRadius">
+            <option value="5">5 กม.</option>
+            <option value="10" selected>10 กม.</option>
+            <option value="20">20 กม.</option>
+            <option value="50">50 กม.</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="hospital-layout">
+        <div class="map-container">
+          <div id="hospitalMap"></div>
+        </div>
+        <div class="hospital-list">
+          <h3>โรงพยาบาลใกล้เคียง</h3>
+          <div id="hospitalResults">
+            <div class="loading-spinner">
+              กดปุ่ม "ค้นหาตำแหน่งปัจจุบัน" เพื่อดูโรงพยาบาลใกล้เคียง
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
 
   <!-- Help -->
   <section id="help" class="info-section">
