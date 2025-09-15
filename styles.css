@@ -139,26 +139,20 @@ h3{font-size:1.25rem;font-weight:700}
 
 /* ——— เลเยอร์มืดหลังเมนู (สร้างโดย JS) ——— */
 .nav-overlay{
-  position: fixed;
-  inset: 0;                      /* ครอบทั้งหน้าจอ */
-  background: rgba(0,0,0,.35);
-  opacity: 0; visibility: hidden;
-  pointer-events: none;
-  transition: opacity .25s ease;
-  z-index: 10010 !important;     /* ต่ำกว่าเมนู */
+  position:fixed; inset:0;
+  background:rgba(0,0,0,.35);
+  opacity:0; visibility:hidden;
+  transition:.2s ease;
+  pointer-events:none;
+  z-index:10010;
 }
 .nav-overlay.is-open{
   opacity:1; visibility:visible;
   pointer-events:auto;
 }
-/* เมนูต้องอยู่เหนือ overlay เสมอ */
-@media (max-width:1024px){
-  .nav{ z-index: 10040 !important; }
-}
 
 /* ย้ำลำดับซ้อนทับ */
 .nav{ z-index:10020 !important; }
-
 
 /* เปิดเมนูบนมือถือ (มีอยู่แล้ว) */
 @media (max-width:768px){
@@ -225,8 +219,6 @@ body.no-scroll{ overflow:hidden; }
 .expert-name{font-weight:800;color:var(--color-primary)}
 .expert-role{font-size:.95rem;color:var(--color-muted);margin-top:.1rem}
 .expert-contact{font-size:.9rem;color:#556972;margin-top:.25rem}
-
-
 
 /* ============== Expert Detail – Clean Card Layout ============== */
 :root{
@@ -391,6 +383,35 @@ body.no-scroll{ overflow:hidden; }
 }
 
 
+/* ----------------------- Hospital Finder Styles -------------- */
+
+  :root{ --brand:#1aa6a6; --brand2:#0e8a8a; --ink:#1f2937; --muted:#6b7280; --card:#fff; --bg:#f6fafb; --radius:16px; --shadow:0 8px 24px rgba(20,35,50,.08); }
+  body{font-family:ui-sans-serif,system-ui,"Sarabun",Segoe UI,Arial; margin:0; background:var(--bg); color:var(--ink);}
+  .wrap{max-width:1100px; margin:20px auto; padding:0 14px;}
+  h2{margin:6px 0 14px; font-size:24px; color:#0b5a5a;}
+  .finder{display:grid; grid-template-columns:360px 1fr; gap:16px;}
+  @media (max-width:950px){ .finder{grid-template-columns:1fr;} }
+  .card{background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:14px;}
+  .ctrl{display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:10px}
+  .btn{height:38px; padding:0 14px; border-radius:10px; border:0; cursor:pointer; font-weight:700}
+  .btn.primary{background:var(--brand); color:#fff;}
+  .btn.secondary{background:#eef2f7; color:#0b5a5a;}
+  .btn:disabled{opacity:.6; cursor:default}
+  input[type="range"]{width:200px}
+  .muted{color:var(--muted); font-size:14px}
+  #hospitalResults{display:flex; flex-direction:column; gap:10px; max-height:520px; overflow:auto; padding-right:6px;}
+  .hospital-item{border:1px solid #e8eef1; border-radius:12px; padding:10px; cursor:pointer; transition:.15s;}
+  .hospital-item:hover{transform:translateY(-1px); box-shadow:0 6px 16px rgba(20,35,50,.06)}
+  .hospital-name{font-weight:800; margin-bottom:2px}
+  .hospital-distance{font-size:13px; color:var(--brand2); margin-bottom:6px}
+  .hospital-address{font-size:14px; color:#334155; margin-bottom:8px}
+  .hospital-actions{display:flex; gap:8px; flex-wrap:wrap}
+  .hospital-action{height:32px; padding:0 10px; border-radius:8px; border:0; background:#e6f7f7; color:#0e8a8a; cursor:pointer; font-weight:700}
+  .hospital-action.secondary{background:#eef2f7; color:#0b5a5a}
+  .loading-spinner,.error-message{padding:12px; text-align:center; color:#0b5a5a; background:#f0fbfb; border-radius:10px}
+  #hospitalMap{height:560px; border-radius:16px; overflow:hidden}
+  .badge{display:inline-block; font-size:12px; padding:2px 8px; border-radius:999px; background:#e8f6f6; color:#0e8a8a; border:1px solid #cfe9e9; margin-left:6px;}
+
 
 
 
@@ -543,11 +564,3 @@ body.no-scroll{ overflow:hidden; }
 .reveal{opacity:0; transform:translateY(14px); transition:opacity .5s ease, transform .5s ease}
 .reveal.show{opacity:1; transform:none}
 
-/* --- FIX: ให้เมนูอยู่เหนือ overlay เสมอในมือถือ --- */
-@media (max-width:1024px){
-  .nav{ z-index:10040 !important; }      /* เดิมคุณมี z-index:999 ทำให้โดน overlay บัง */
-  #navOverlay{ z-index:10010 !important; } /* overlay ต่ำกว่า nav */
-}
-
-/* เผื่อสไตล์อื่นปิดการคลิก ให้ย้ำว่า a คลิกได้แน่ ๆ */
-.nav a{ position:relative; z-index:1; pointer-events:auto; }
