@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="styles.css?v=20250913" />
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=places&language=th"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <!-- LIFF SDK -->
@@ -274,39 +275,22 @@
 
  <!-- Hospital Finder -->
   <section id="hospitals" class="info-section hospital-finder">
-    <div class="container">
-      <h2>โรงพยาบาลใกล้ฉัน</h2>
-      <p>ค้นหาโรงพยาบาลและคลินิกที่มีบริการสุขภาพจิตใกล้ตำแหน่งของคุณ</p>
-      
-      <div class="hospital-controls">
-        <button class="location-button" id="findLocationBtn">
-          ค้นหาตำแหน่งปัจจุบัน
-        </button>
-        <div class="radius-selector">
-          <label for="searchRadius">รัศมีการค้นหา:</label>
-          <select id="searchRadius">
-            <option value="5">5 กม.</option>
-            <option value="10" selected>10 กม.</option>
-            <option value="20">20 กม.</option>
-            <option value="50">50 กม.</option>
-          </select>
+     <div class="wrap">
+    <h2>ค้นหาโรงพยาบาลที่ดูแล “ซึมเศร้า” ใกล้คุณ</h2>
+    <div class="finder">
+      <!-- left: list & controls -->
+      <div class="card">
+        <div class="ctrl">
+          <button id="findLocationBtn" class="btn">ค้นหาตำแหน่งปัจจุบัน</button>
+          <input id="searchRadius" type="range" min="3" max="30" step="1" value="10" />
+          <span id="radiusLabel" class="muted">รัศมีค้นหา: 10 กม.</span>
         </div>
+        <div id="hospitalResults" class="muted">ยังไม่พบตำแหน่งของคุณ • กด “ค้นหาตำแหน่งปัจจุบัน”</div>
       </div>
-
-      <div class="hospital-layout">
-        <div class="map-container">
-          <div id="hospitalMap"></div>
-        </div>
-        <div class="hospital-list">
-          <h3>โรงพยาบาลใกล้เคียง</h3>
-          <div id="hospitalResults">
-            <div class="loading-spinner">
-              กดปุ่ม "ค้นหาตำแหน่งปัจจุบัน" เพื่อดูโรงพยาบาลใกล้เคียง
-            </div>
-          </div>
-        </div>
-      </div>
+      <!-- right: map -->
+      <div id="hospitalMap" class="card"></div>
     </div>
+  </div>
   </section>
 
 

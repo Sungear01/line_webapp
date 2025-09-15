@@ -288,265 +288,354 @@ function showQuizResult(score) {
   `;
 }
 
-// ---------------------- Hospital Finder (Leaflet) ----------------------
-let map;
-let userLocation = null;
+/* ====================== MindCare — Hospital Finder (JS) ====================== */
+/*  คุณสมบัติ:
+    - ปักหมุด รพ. ตามประเภท (ไอคอนคนละสี)
+    - ค้นหาโรงพยาบาลใกล้ตำแหน่งฉัน (รัศมีปรับได้)
+    - นำทางด้วย "ชื่อโรงพยาบาล" (ไม่ใช้ที่อยู่/พิกัด)
+    - ซิงก์พิกัดให้ตรงกับ Google (ถ้าใส่ API และกดปุ่ม #syncBtn)
+    - แคชพิกัด/Place ID ใน localStorage ตาม slug
+*/
 
-// ข้อมูลตัวอย่าง (แก้ชื่อให้ถูก: บำรุงราษฎร์)
-const sampleHospitals = [
-  {
-    name: "โรงพยาบาลศิริราช",
-    lat: 13.7589, lng: 100.4894,
-    address: "2 ถนนวังหลัง เขตบางกอกน้อย กรุงเทพฯ",
-    phone: "02-419-7000", type: "โรงพยาบาลรัฐ"
-  },
-  {
-    name: "โรงพยาบาลจุฬาลงกรณ์",
-    lat: 13.7372, lng: 100.5326,
-    address: "1873 ถนนพระราม 4 ปทุมวัน กรุงเทพฯ",
-    phone: "02-256-4000", type: "โรงพยาบาลรัฐ"
-  },
-  {
-    name: "โรงพยาบาลรามาธิบดี",
-    lat: 13.7594, lng: 100.5252,
-    address: "270 ถนนราชวิถี เขตราชเทวี กรุงเทพฯ",
-    phone: "02-201-1000", type: "โรงพยาบาลรัฐ"
-  },
-  {
-    name: "โรงพยาบาลสมิติเวช",
-    lat: 13.7245, lng: 100.5668,
-    address: "133 ถนนสุขุมวิท 49 เขตวัฒนา กรุงเทพฯ",
-    phone: "02-022-2222", type: "โรงพยาบาลเอกชน"
-  },
-  {
-    name: "โรงพยาบาลกรุงเทพ",
-    lat: 13.7373, lng: 100.5445,
-    address: "2 ซอยศูนย์วิจัย ถนนเพชรบุรีตัดใหม่ ห้วยขวาง กรุงเทพฯ",
-    phone: "1719", type: "โรงพยาบาลเอกชน"
-  },
-  {
-    name: "โรงพยาบาลบำรุงราษฎร์",
-    lat: 13.7442, lng: 100.5565,
-    address: "33 ถนนสุขุมวิท เขตวัฒนา กรุงเทพฯ",
-    phone: "1378", type: "โรงพยาบาลเอกชน"
-  }
+(() => {
+/* ====================== CONFIG ====================== */
+const GOOGLE_TEXT_SUFFIX = " กรุงเทพฯ ประเทศไทย";  // ช่วยให้ Geocoder จับใน กทม. ได้แม่นขึ้น
+
+/* ====================== STATE ====================== */
+let map, markersLayer = null, userLocation = null;
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+/* ====================== DATA (ปรับ/เพิ่มได้) ====================== */
+const hospitals = [
+  // ---- รัฐ / สถาบัน ----
+  { slug:"siriraj", name:"โรงพยาบาลศิริราช", address:"ถ.อิสรภาพ เขตบางกอกน้อย", phone:"02-419-7000", type:"โรงพยาบาลรัฐ",  lat:13.7589, lng:100.4894, gplace_id:null },
+  { slug:"ramathibodi", name:"รพ.รามาธิบดี", address:"ถ.ราชวิถี เขตราชเทวี", phone:"02-201-1000", type:"โรงพยาบาลรัฐ",  lat:13.7594, lng:100.5252, gplace_id:null },
+  { slug:"chulalongkorn", name:"รพ.จุฬาลงกรณ์ สภากาชาดไทย", address:"ถ.พระราม 4 เขตปทุมวัน", phone:"02-256-4000", type:"โรงพยาบาลรัฐ", lat:13.7372, lng:100.5326, gplace_id:null },
+  { slug:"police", name:"รพ.ตำรวจ", address:"ถ.พระราม 1 เขตปทุมวัน", phone:"02-207-6000", type:"โรงพยาบาลรัฐ", gplace_id:null },
+  { slug:"rajavithi", name:"รพ.ราชวิถี", address:"ถ.ราชวิถี เขตราชเทวี", phone:"02-354-8108", type:"โรงพยาบาลรัฐ", gplace_id:null },
+  { slug:"vajira", name:"รพ.วชิรพยาบาล (มหาวิทยาลัยนวมินทราธิราช)", address:"ถ.สามเสน เขตดุสิต", phone:"02-244-3000", type:"โรงพยาบาลรัฐ", gplace_id:null },
+  { slug:"somdetchaophraya", name:"สถาบันจิตเวชศาสตร์สมเด็จเจ้าพระยา", address:"ถ.สมเด็จเจ้าพระยา เขตคลองสาน", phone:"02-439-5593", type:"สถาบันเฉพาะทาง", gplace_id:null },
+  { slug:"lerdsin", name:"รพ.เลิดสิน", address:"ถ.สาทรเหนือ เขตบางรัก", phone:"02-353-9800", type:"โรงพยาบาลรัฐ", gplace_id:null },
+  { slug:"taksin", name:"รพ.ตากสิน (กทม.)", address:"ถ.สมเด็จพระเจ้าตากสิน เขตธนบุรี", phone:"02-437-0123", type:"รพ.กทม.", gplace_id:null },
+  { slug:"charoenkrung", name:"รพ.เจริญกรุงประชารักษ์ (กทม.)", address:"ถ.เจริญกรุง เขตบางคอแหลม", phone:"02-289-7000", type:"รพ.กทม.", gplace_id:null },
+  { slug:"sirindhorn", name:"รพ.สิรินธร (กทม.)", address:"เขตประเวศ", phone:"02-328-6900", type:"รพ.กทม.", gplace_id:null },
+  { slug:"ratchaphiphat", name:"รพ.ราชพิพัฒน์ (กทม.)", address:"เขตบางแค", phone:"02-444-7000", type:"รพ.กทม.", gplace_id:null },
+  { slug:"latkrabang_gov", name:"รพ.ลาดกระบัง (กทม.)", address:"เขตลาดกระบัง", phone:"02-326-9999", type:"รพ.กทม.", gplace_id:null },
+  { slug:"klang_bma", name:"รพ.กลาง (กทม.)", address:"ถ.หลวง เขตป้อมปราบฯ", phone:"02-220-8000", type:"รพ.กทม.", gplace_id:null },
+
+  // ---- เอกชน ----
+  { slug:"bangkok_hospital", name:"Bangkok Hospital", address:"ซ.ศูนย์วิจัย เขตห้วยขวาง", phone:"1719", type:"เอกชน",  lat:13.7396, lng:100.5850, gplace_id:null },
+  { slug:"bumrungrad", name:"บำรุงราษฎร์", address:"ถ.สุขุมวิท เขตวัฒนา", phone:"1378", type:"เอกชน",  lat:13.7442, lng:100.5565, gplace_id:null },
+  { slug:"samitivej_suk", name:"สมิติเวช สุขุมวิท", address:"ซ.สุขุมวิท 49 เขตวัฒนา", phone:"02-022-2222", type:"เอกชน",  lat:13.7245, lng:100.5668, gplace_id:null },
+  { slug:"vejthani", name:"เวชธานี", address:"ถ.ลาดพร้าว เขตบางกะปิ", phone:"02-734-0000", type:"เอกชน", gplace_id:null },
+  { slug:"ramkhamhaeng", name:"รพ.รามคำแหง", address:"ถ.รามคำแหง บางกะปิ", phone:"02-743-9999", type:"เอกชน", gplace_id:null },
+  { slug:"phyathai1", name:"พญาไท 1", address:"ถ.ศรีอยุธยา ราชเทวี", phone:"1772", type:"เอกชน", gplace_id:null },
+  { slug:"phyathai2", name:"พญาไท 2", address:"ถ.พหลโยธิน พญาไท", phone:"1772", type:"เอกชน", gplace_id:null },
+  { slug:"phyathai3", name:"พญาไท 3", address:"เพชรเกษม ภาษีเจริญ", phone:"1772", type:"เอกชน", gplace_id:null },
+  { slug:"paolo_phahol", name:"เปาโล พหลโยธิน", address:"สะพานควาย พญาไท", phone:"02-279-7000", type:"เอกชน", gplace_id:null },
+  { slug:"paolo_chokchai4", name:"เปาโล โชคชัย 4", address:"โชคชัย 4 ลาดพร้าว", phone:"02-514-4141", type:"เอกชน", gplace_id:null },
+  { slug:"piyavate", name:"ปิยะเวท", address:"ถ.พระราม 9 ห้วยขวาง", phone:"02-129-9000", type:"เอกชน", gplace_id:null },
+  { slug:"yanhee", name:"ยันฮี", address:"จรัญฯ 90 บางพลัด", phone:"02-879-0300", type:"เอกชน", gplace_id:null },
+  { slug:"bnh", name:"BNH Hospital", address:"ซ.คอนแวนต์ เขตบางรัก", phone:"02-022-0700", type:"เอกชน", gplace_id:null },
+  { slug:"saintlouis", name:"เซนต์หลุยส์", address:"ถ.สาทรใต้ เขตสาทร", phone:"02-675-5000", type:"เอกชน", gplace_id:null },
+  { slug:"thonburi", name:"ธนบุรี", address:"ถ.อิสรภาพ บางกอกใหญ่", phone:"02-487-2000", type:"เอกชน", gplace_id:null },
+  { slug:"kasemrad_bangkae", name:"เกษมราษฎร์ บางแค", address:"เพชรเกษม บางแค", phone:"02-804-8959", type:"เอกชน", gplace_id:null },
+  { slug:"kasemrad_prachachuen", name:"เกษมราษฎร์ ประชาชื่น", address:"ประชาชื่น บางซื่อ/จตุจักร", phone:"02-910-1600", type:"เอกชน", gplace_id:null },
+  { slug:"navamin1", name:"นวมินทร์ 1", address:"มีนบุรี", phone:"02-914-2111", type:"เอกชน", gplace_id:null },
+  { slug:"paolohospital_nawamin", name:"เปาโล นวมินทร์", address:"บึงกุ่ม/คันนายาว", phone:"02-942-7777", type:"เอกชน", gplace_id:null },
+  { slug:"bangna1", name:"บางนา 1", address:"บางนา-ตราด กม.3", phone:"02-361-1111", type:"เอกชน", gplace_id:null },
+  { slug:"pramongkut", name:"รพ.พระมงกุฎเกล้า", address:"ถ.ราชวิถี ราชเทวี", phone:"02-763-9300", type:"ทหาร/รัฐ", gplace_id:null }
 ];
 
-function setupHospitalFinder() {
-  const hospitalsSection = document.getElementById('hospitals');
-  const mapBox = document.getElementById('hospitalMap');
-  const btn = document.getElementById('findLocationBtn');
-  const radiusInput = document.getElementById('searchRadius');
-
-  if (!hospitalsSection || !mapBox) return;
-
-  // สร้างแผนที่เมื่อส่วน hospitals โผล่บนหน้าจอ (ช่วยประหยัด)
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting && !map) {
-        setTimeout(initMap, 80);
-      }
-    });
-  });
-  observer.observe(hospitalsSection);
-
-  if (btn) btn.addEventListener('click', findUserLocation);
-
-  if (radiusInput) {
-    let t;
-    radiusInput.addEventListener('input', () => {
-      // debounce 250ms
-      clearTimeout(t);
-      t = setTimeout(() => {
-        if (userLocation) findNearbyHospitals();
-      }, 250);
-    });
-    radiusInput.addEventListener('change', () => {
-      if (userLocation) findNearbyHospitals();
-    });
-  }
+/* ====================== ICONS ====================== */
+const ICONS = {
+  "โรงพยาบาลรัฐ":   L.icon({ iconUrl: svgPin("#1aa6a6"), iconSize:[32,32], iconAnchor:[16,32] }),
+  "รพ.กทม.":        L.icon({ iconUrl: svgPin("#0e8a8a"), iconSize:[32,32], iconAnchor:[16,32] }),
+  "เอกชน":          L.icon({ iconUrl: svgPin("#2563eb"), iconSize:[32,32], iconAnchor:[16,32] }),
+  "ทหาร/รัฐ":       L.icon({ iconUrl: svgPin("#0ea5e9"), iconSize:[32,32], iconAnchor:[16,32] }),
+  "สถาบันเฉพาะทาง":  L.icon({ iconUrl: svgPin("#10b981"), iconSize:[32,32], iconAnchor:[16,32] }),
+  "default":         L.icon({ iconUrl: svgPin("#64748b"), iconSize:[32,32], iconAnchor:[16,32] })
+};
+function svgPin(color){
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+      <defs><filter id="s" x="-50%" y="-50%" width="200%" height="200%">
+        <feDropShadow dx="0" dy="1" stdDeviation="1.2" flood-opacity=".25"/>
+      </filter></defs>
+      <path filter="url(#s)" fill="${color}" d="M16 2c6 0 10 4.4 10 10 0 7.5-8.6 15-9.6 15.8-.2.2-.6.2-.8 0C14.6 27 6 19.5 6 12 6 6.4 10 2 16 2z"/>
+      <circle cx="16" cy="12.5" r="4.2" fill="#fff"/>
+    </svg>`;
+  return "data:image/svg+xml;base64," + btoa(svg);
 }
 
-function initMap() {
-  // ต้องมี Leaflet CSS/JS โหลดไว้ในหน้า HTML
-  // <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  // <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+/* ====================== GOOGLE HELPERS ====================== */
+let geocoder, placesSvc;
+function googleReady(){
+  return !!(window.google && google.maps && google.maps.places);
+}
+async function waitGoogle(){
+  for (let i=0;i<60;i++){ // ~6s
+    if (googleReady()){
+      geocoder = new google.maps.Geocoder();
+      placesSvc = new google.maps.places.PlacesService(document.createElement('div'));
+      const badge = document.getElementById('gok-badge'); if (badge) badge.style.display='inline-block';
+      return true;
+    }
+    await sleep(100);
+  }
+  return false;
+}
+function geocodeByText(name, address){
+  return new Promise((resolve)=>{
+    if (!geocoder) return resolve(null);
+    geocoder.geocode({ address: `${name} ${address}${GOOGLE_TEXT_SUFFIX}` }, (results, status)=>{
+      if (status === 'OK' && results?.[0]?.geometry?.location){
+        const loc = results[0].geometry.location;
+        resolve({ lat: loc.lat(), lng: loc.lng(), place_id: results[0].place_id || null });
+      } else resolve(null);
+    });
+  });
+}
+function findPlaceIdByQuery(q){
+  return new Promise((resolve)=>{
+    if (!placesSvc) return resolve(null);
+    const req = { query: `${q}${GOOGLE_TEXT_SUFFIX}`, fields: ['place_id','geometry','name'] };
+    placesSvc.findPlaceFromQuery(req, (res, status)=>{
+      if (status === google.maps.places.PlacesServiceStatus.OK && res?.[0]){
+        const r = res[0];
+        resolve({
+          place_id: r.place_id || null,
+          lat: r.geometry?.location?.lat?.(),
+          lng: r.geometry?.location?.lng?.()
+        });
+      } else resolve(null);
+    });
+  });
+}
+function getDetailsByPlaceId(place_id){
+  return new Promise((resolve)=>{
+    if (!placesSvc) return resolve(null);
+    placesSvc.getDetails({ placeId: place_id, fields:['geometry','name','formatted_address','formatted_phone_number'] }, (res, status)=>{
+      if (status === google.maps.places.PlacesServiceStatus.OK && res?.geometry?.location){
+        resolve({
+          lat: res.geometry.location.lat(),
+          lng: res.geometry.location.lng(),
+          name: res.name, address: res.formatted_address || null,
+          phone: res.formatted_phone_number || null
+        });
+      } else resolve(null);
+    });
+  });
+}
+
+/* ====================== CACHE ====================== */
+function cacheLatLng(slug, lat, lng, place_id){
+  try{ localStorage.setItem('geo_'+slug, JSON.stringify({lat,lng,place_id})); }catch{}
+}
+function readCache(slug){
+  try{ return JSON.parse(localStorage.getItem('geo_'+slug)||'null'); }catch{return null;}
+}
+function loadCachedLatLng(){
+  hospitals.forEach(h=>{
+    const c = readCache(h.slug);
+    if (c?.lat && c?.lng){ h.lat=c.lat; h.lng=c.lng; if (c.place_id) h.gplace_id=c.place_id; }
+  });
+}
+
+/* ====================== MAP / DRAW ====================== */
+function initMap(){
   map = L.map('hospitalMap').setView([13.7563, 100.5018], 11);
-
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
-  }).addTo(map);
-
-  // หมุดตัวอย่าง
-  sampleHospitals.forEach(h => {
-    L.marker([h.lat, h.lng]).addTo(map).bindPopup(`
-      <strong>${h.name}</strong><br>
-      ${h.address}<br>
-      โทร: ${h.phone}<br>
-      ประเภท: ${h.type}
-    `);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    { attribution:'© OpenStreetMap contributors' }).addTo(map);
+  markersLayer = L.layerGroup().addTo(map);
+  drawMarkers();
+}
+function drawMarkers(){
+  if (markersLayer){ markersLayer.clearLayers(); }
+  hospitals.forEach(h=>{
+    if (typeof h.lat !== 'number' || typeof h.lng !== 'number') return;
+    const icon = ICONS[h.type] || ICONS.default;
+    const m = L.marker([h.lat, h.lng], { icon }).addTo(markersLayer);
+    const gpid = h.gplace_id ? `<br><small>Place ID: ${h.gplace_id}</small>` : '';
+    m.bindPopup(`<strong>${h.name}</strong><br>${h.address}<br>โทร: <a href="tel:${h.phone}">${h.phone}</a><br>ประเภท: ${h.type}${gpid}`);
+    h.__marker = m;
   });
 }
 
-function calculateDistance(lat1, lng1, lat2, lng2) {
-  const R = 6371; // km
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLng = (lng2 - lng1) * Math.PI / 180;
-  const a = Math.sin(dLat/2)**2 +
-            Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) *
-            Math.sin(dLng/2)**2;
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  return R * c;
-}
+/* ====================== SYNC FROM GOOGLE ====================== */
+async function syncFromGoogle(){
+  const ok = await waitGoogle();
+  if (!ok){ alert('ยังไม่ได้ใส่ Google API Key หรือโหลดไม่สำเร็จ'); return; }
 
-function findUserLocation() {
-  const btn = document.getElementById('findLocationBtn');
-  if (btn) {
-    btn.disabled = true;
-    btn.textContent = 'กำลังค้นหา...';
-  }
+  const btn = document.getElementById('syncBtn');
+  if (btn){ btn.disabled=true; btn.textContent='ซิงก์จาก Google...'; }
 
-  if (!navigator.geolocation) {
-    showError('เบราว์เซอร์นี้ไม่รองรับการหาตำแหน่ง');
-    if (btn) { btn.disabled = false; btn.textContent = 'ค้นหาตำแหน่งปัจจุบัน'; }
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(
-    pos => {
-      userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-
-      if (map) {
-        map.setView([userLocation.lat, userLocation.lng], 13);
-        L.marker([userLocation.lat, userLocation.lng], {
-          icon: L.icon({
-            iconUrl: 'data:image/svg+xml;base64,' + btoa(`
-              <svg width="25" height="25" viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="12.5" cy="12.5" r="8" fill="#ff4444" stroke="white" stroke-width="3"/>
-                <circle cx="12.5" cy="12.5" r="3" fill="white"/>
-              </svg>
-            `),
-            iconSize: [25, 25],
-            iconAnchor: [12.5, 12.5]
-          })
-        }).addTo(map).bindPopup('ตำแหน่งปัจจุบันของคุณ');
+  for (const h of hospitals){
+    try{
+      // 1) ถ้ามี place_id → ใช้ Details แม่นสุด
+      if (h.gplace_id){
+        const det = await getDetailsByPlaceId(h.gplace_id);
+        if (det?.lat && det?.lng){
+          h.lat = det.lat; h.lng = det.lng;
+          if (det.address) h.address = det.address;
+          if (det.phone) h.phone = det.phone;
+          cacheLatLng(h.slug, h.lat, h.lng, h.gplace_id);
+          await sleep(250);
+          continue;
+        }
       }
+      // 2) ค้นหา place จากชื่อ+ที่อยู่
+      const found = await findPlaceIdByQuery(`${h.name} ${h.address}`);
+      if (found?.lat && found?.lng){
+        h.lat = found.lat; h.lng = found.lng;
+        if (found.place_id) h.gplace_id = found.place_id;
+        cacheLatLng(h.slug, h.lat, h.lng, h.gplace_id||null);
+        await sleep(250);
+        continue;
+      }
+      // 3) สำรองด้วย Geocoder
+      const geo = await geocodeByText(h.name, h.address);
+      if (geo?.lat && geo?.lng){
+        h.lat = geo.lat; h.lng = geo.lng;
+        if (geo.place_id) h.gplace_id = geo.place_id;
+        cacheLatLng(h.slug, h.lat, h.lng, h.gplace_id||null);
+      }
+      await sleep(250);
+    }catch(e){ /* ข้ามรายการที่ error */ }
+  }
 
-      findNearbyHospitals();
-
-      if (btn) { btn.disabled = false; btn.textContent = 'ค้นหาตำแหน่งปัจจุบัน'; }
-    },
-    err => {
-      const code = err && err.code;
-      let msg = 'ไม่สามารถหาตำแหน่งได้';
-      if (code === err.PERMISSION_DENIED) msg = 'การเข้าถึงตำแหน่งถูกปฏิเสธ กรุณาอนุญาตการเข้าถึงตำแหน่ง';
-      else if (code === err.POSITION_UNAVAILABLE) msg = 'ข้อมูลตำแหน่งไม่พร้อมใช้งาน';
-      else if (code === err.TIMEOUT) msg = 'การค้นหาตำแหน่งใช้เวลานานเกินไป';
-      showError(msg);
-      if (btn) { btn.disabled = false; btn.textContent = 'ค้นหาตำแหน่งปัจจุบัน'; }
-    },
-    { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
-  );
+  drawMarkers();
+  if (userLocation) findNearbyHospitals();
+  if (btn){ btn.disabled=false; btn.textContent='ซิงก์พิกัดจาก Google'; }
 }
 
-function findNearbyHospitals() {
+/* ====================== NEARBY / UI ====================== */
+function calculateDistance(lat1,lng1,lat2,lng2){
+  const R=6371, dLat=(lat2-lat1)*Math.PI/180, dLng=(lng2-lng1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return 2*R*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function findNearbyHospitals(){
   if (!userLocation) return;
   const radiusEl = document.getElementById('searchRadius');
-  const radius = radiusEl ? parseInt(radiusEl.value, 10) : 10;
+  const radius = radiusEl ? parseInt(radiusEl.value,10) : 10;
 
-  const nearby = sampleHospitals
-    .map(h => ({ ...h, distance: calculateDistance(userLocation.lat, userLocation.lng, h.lat, h.lng) }))
-    .filter(h => h.distance <= radius)
-    .sort((a, b) => a.distance - b.distance);
+  const list = hospitals
+    .filter(h=> typeof h.lat==='number' && typeof h.lng==='number')
+    .map(h=> ({...h, distance: calculateDistance(userLocation.lat,userLocation.lng,h.lat,h.lng)}))
+    .filter(h=> h.distance <= radius)
+    .sort((a,b)=> a.distance - b.distance);
 
-  displayHospitals(nearby);
+  displayHospitals(list);
 }
+function displayHospitals(list){
+  const el = document.getElementById('hospitalResults');
+  if (!el) return;
 
-function displayHospitals(hospitals) {
-  const results = document.getElementById('hospitalResults');
-  if (!results) return;
-
-  if (!hospitals.length) {
-    results.innerHTML = `
-      <div class="loading-spinner">
-        ไม่พบโรงพยาบาลในรัศมีที่กำหนด กรุณาขยายรัศมีการค้นหา
-      </div>
-    `;
+  if (!list.length){
+    el.innerHTML = `<div class="loading-spinner">ไม่พบโรงพยาบาลในรัศมีที่กำหนด • ลองขยายรัศมี</div>`;
     return;
   }
-
-  results.innerHTML = hospitals.map(h => `
-    <div class="hospital-item" onclick="window.focusHospital(${h.lat}, ${h.lng})">
-      <div class="hospital-name">${h.name}</div>
+  el.innerHTML = list.map(h=>`
+    <div class="hospital-item" onclick="window.focusHospital('${h.slug}')">
+      <div class="hospital-name">${h.name}${h.gplace_id?'<span class="badge">Google ✓</span>':''}</div>
       <div class="hospital-distance">${h.distance.toFixed(1)} กม. จากคุณ</div>
       <div class="hospital-address">${h.address}</div>
       <div class="hospital-actions">
-        <button class="hospital-action" onclick="event.stopPropagation(); window.callHospital('${h.phone}')">
-          โทร ${h.phone}
-        </button>
-        <button class="hospital-action secondary" onclick="event.stopPropagation(); window.openMaps(${h.lat}, ${h.lng}, '${h.name.replace(/'/g, "\\'")}')">
-          นำทาง
-        </button>
+        <button class="hospital-action" onclick="event.stopPropagation(); window.callHospital('${h.phone}')">โทร ${h.phone}</button>
+        <button class="hospital-action secondary"
+          onclick="event.stopPropagation(); window.openMapsByName('${h.name.replace(/'/g,"\\'")}', '${h.gplace_id||''}')">นำทาง</button>
       </div>
     </div>
   `).join('');
 }
 
-function showError(message) {
-  const results = document.getElementById('hospitalResults');
-  if (results) {
-    results.innerHTML = `<div class="error-message">${message}</div>`;
-  } else {
-    alert(message);
-  }
-}
-
-// ฟังก์ชันที่เรียกจาก HTML ต้องอยู่บน window
-window.focusHospital = function(lat, lng) {
-  if (map) map.setView([lat, lng], 15);
+/* ====================== PUBLIC FUNCS (window) ====================== */
+window.focusHospital = function(slug){
+  const h = hospitals.find(x=>x.slug===slug);
+  if (!h || !h.__marker) return;
+  map.setView([h.lat, h.lng], 15);
+  h.__marker.openPopup();
 };
-
-window.callHospital = function(phone) {
-  // โทรตรง: ทำงานบนมือถือ/เบราว์เซอร์ที่รองรับ
-  window.location.href = `tel:${phone}`;
-};
-
-window.openMaps = function(lat, lng, name) {
-  // ใช้พิกัดเป็นหลัก + ใส่ query ชื่อสถานที่เพื่ออ่านง่าย
-  const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&destination_place_id=&travelmode=driving&query=${encodeURIComponent(name)}`;
+window.callHospital = (phone) => { window.location.href = `tel:${phone}`; };
+window.openMapsByName = (name, placeId = '') => {
+  const origin = (userLocation) ? `&origin=${userLocation.lat},${userLocation.lng}` : '';
+  const pid = placeId ? `&destination_place_id=${encodeURIComponent(placeId)}` : '';
+  const url = `https://www.google.com/maps/dir/?api=1` +
+              `&destination=${encodeURIComponent(name)}` + pid + origin +
+              `&travelmode=driving`;
   window.open(url, '_blank');
 };
 
-// ---------------------- (Optional) Avatar helper ถ้าจำเป็น ----------------------
-function svgAvatar(color, initials){
-  const svg = encodeURIComponent(
-    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'>
-      <defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
-        <stop offset='0%' stop-color='${color}'/><stop offset='100%' stop-color='#ffffff33'/>
-      </linearGradient></defs>
-      <rect width='200' height='200' rx='24' fill='url(#g)'/>
-      <circle cx='100' cy='80' r='40' fill='#ffffffcc'/>
-      <rect x='40' y='120' width='120' height='50' rx='25' fill='#ffffffcc'/>
-      <text x='100' y='98' font-size='42' text-anchor='middle' fill='#134b5b' font-family='Sarabun, sans-serif' font-weight='700'>${initials}</text>
-    </svg>`
+/* ====================== GEOLOCATION / BOOT ====================== */
+function showError(message){
+  const el = document.getElementById('hospitalResults');
+  if (el) el.innerHTML = `<div class="error-message">${message}</div>`;
+  else alert(message);
+}
+function findUserLocation(){
+  const btn = document.getElementById('findLocationBtn');
+  if (btn){ btn.disabled=true; btn.textContent='กำลังค้นหา...'; }
+
+  if (!navigator.geolocation){
+    showError('เบราว์เซอร์นี้ไม่รองรับการหาตำแหน่ง');
+    if (btn){ btn.disabled=false; btn.textContent='ค้นหาตำแหน่งปัจจุบัน'; }
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    pos=>{
+      userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      map.setView([userLocation.lat, userLocation.lng], 13);
+
+      L.marker([userLocation.lat, userLocation.lng], {
+        icon: L.icon({ iconUrl: 'data:image/svg+xml;base64,' + btoa(`
+          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26">
+            <circle cx="13" cy="13" r="8.5" fill="#ff4444" stroke="white" stroke-width="3"/>
+            <circle cx="13" cy="13" r="3.2" fill="white"/>
+          </svg>`),
+          iconSize:[26,26], iconAnchor:[13,13]
+        })
+      }).addTo(map).bindPopup('ตำแหน่งของคุณ');
+
+      findNearbyHospitals();
+      if (btn){ btn.disabled=false; btn.textContent='ค้นหาตำแหน่งปัจจุบัน'; }
+    },
+    err=>{
+      let msg='ไม่สามารถหาตำแหน่งได้';
+      if (err?.code===err.PERMISSION_DENIED) msg='การเข้าถึงตำแหน่งถูกปฏิเสธ กรุณาอนุญาต';
+      else if (err?.code===err.POSITION_UNAVAILABLE) msg='ข้อมูลตำแหน่งไม่พร้อมใช้งาน';
+      else if (err?.code===err.TIMEOUT) msg='ใช้เวลานานเกินไป';
+      showError(msg);
+      if (btn){ btn.disabled=false; btn.textContent='ค้นหาตำแหน่งปัจจุบัน'; }
+    },
+    { enableHighAccuracy:true, timeout:10000, maximumAge:60000 }
   );
-  return `data:image/svg+xml;charset=utf-8,${svg}`;
 }
-// แสดงค่า radius แบบสด
-const radius = document.getElementById('searchRadius');
-const radiusLabel = document.getElementById('radiusLabel');
-if (radius && radiusLabel) {
-  const sync = () => radiusLabel.textContent = `รัศมีค้นหา: ${radius.value} กม.`;
-  radius.addEventListener('input', sync);
-  sync();
+
+/* ====================== INIT ====================== */
+function setup(){
+  loadCachedLatLng();
+  initMap();
+  drawMarkers();
+
+  const btn = document.getElementById('findLocationBtn');
+  if (btn) btn.addEventListener('click', findUserLocation);
+
+  const r = document.getElementById('searchRadius');
+  const rl = document.getElementById('radiusLabel');
+  if (r && rl){
+    const sync=()=> rl.textContent=`รัศมีค้นหา: ${r.value} กม.`;
+    r.addEventListener('input', sync); sync();
+    r.addEventListener('change', ()=> userLocation && findNearbyHospitals());
+  }
+
+  const syncBtn = document.getElementById('syncBtn');
+  if (syncBtn) syncBtn.addEventListener('click', syncFromGoogle);
 }
-//เพิ่มลูกเล่นเล็กๆ (JS – bounce ตอนคลิก)
-document.querySelectorAll('.help-card').forEach(card=>{
-  card.addEventListener('click', ()=>{
-    card.style.transform = "scale(0.95)";
-    setTimeout(()=> card.style.transform = "", 150);
-  });
-});
+
+document.addEventListener('DOMContentLoaded', setup);
+})();
+
 
 //what
 (()=> {
