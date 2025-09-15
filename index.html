@@ -6,7 +6,8 @@
   <title>เว็บแอพโรคซึมเศร้า – MindCare</title>
 
   <!-- โหลดไฟล์สไตล์พร้อมเวอร์ชันกันแคช -->
-  <link rel="stylesheet" href="styles.css?v=20250911" />
+  <link rel="icon" type="hero-image/png" sizes="16x16" href="image/logo_web.png">
+  <link rel="stylesheet" href="styles.css?v=20250913" />
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -47,7 +48,7 @@
 -->
 
   <!-- สคริปต์ของคุณ พร้อมเวอร์ชันกันแคช -->
-  <script defer src="script.js?v=20250911"></script>
+  <script defer src="script.js?v=20250913"></script>
 </head>
 
 
@@ -55,7 +56,11 @@
   <!-- Header -->
   <header class="site-header">
     <div class="container header-container">
-      <div class="logo">MindCare</div>
+      <a href="#" class="logo">
+  <img src="ba8f5741-4fe4-42f8-9062-b6a303890d30.png" alt="MindCare" class="logo-img" />
+  <span class="logo-text">MINDCARE</span>
+</a>
+
       <div id="userName" class="user-name"></div>
       <nav class="nav" id="mainNav">
         <ul>
@@ -91,12 +96,128 @@
   </section>
 
   <!-- What -->
-  <section id="what" class="info-section">
-    <div class="container">
-      <h2>โรคซึมเศร้าคืออะไร</h2>
-      <p>โรคซึมเศร้าเป็นภาวะทางอารมณ์ที่ส่งผลต่อความรู้สึก ความคิด และพฤติกรรมในชีวิตประจำวัน...</p>
+ <section id="depress" class="depress-sec">
+  <h2>โรคซึมเศร้า – ความรู้และการดูแล</h2>
+
+  <!-- Tabs -->
+  <div class="tabs" role="tablist">
+    <button class="tab is-active" data-tab="about">โรคซึมเศร้าคืออะไร</button>
+    <button class="tab" data-tab="treat">รักษายังไง</button>
+    <button class="tab" data-tab="centers">ศูนย์รักษา</button>
+    
+  </div>
+
+  <div class="panels">
+    <!-- 1) What is depression -->
+    <div id="panel-about" class="panel is-active">
+      <div class="hero-card">
+        <div class="hero-txt">
+          <h3>“โรคซึมเศร้า” คืออะไร?</h3>
+          <p>เป็นภาวะทางอารมณ์ที่มีอาการเศร้าหดหู่ เบื่อสิ่งที่เคยชอบ สมาธิลดลง นอนไม่ปกติ และอาจมีความคิดทำร้ายตนเอง
+            หากอาการต่อเนื่องนาน <strong>&gt; 2 สัปดาห์</strong> หรือกระทบการเรียน/งาน/ความสัมพันธ์ ควรประเมินโดยผู้เชี่ยวชาญ</p>
+          <ul class="list two-cols">
+            <li>เศร้า/หดหู่ เบื่อสิ่งที่เคยชอบ</li><li>นอนยาก/นอนมาก เหนื่อยง่าย</li>
+            <li>สมาธิลดลง รู้สึกไร้ค่า</li><li>เบื่ออาหาร/กินมาก น้ำหนักเปลี่ยน</li>
+            <li>อยากแยกตัว</li><li>มีความคิดทำร้ายตนเอง</li>
+          </ul>
+          <div class="cta-row">
+            <a class="btn primary" href="#quiz">ทำแบบประเมินสั้นๆ</a>
+            <a class="btn ghost" href="tel:1323">สายด่วน 1323</a>
+            <a class="btn outline" href="tel:1669">ฉุกเฉิน 1669</a>
+          </div>
+        </div>
+        <div class="hero-img" aria-hidden="true">
+          <div class="hero-img">
+           <img src="img6.png" alt="ภาพประกอบโรคซึมเศร้า">
+        </div>
+
+        </div>
+        
+      </div>
     </div>
-  </section>
+
+    <!-- 2) How to treat -->
+    <div id="panel-treat" class="panel">
+      <div class="grid-3">
+        <div class="card">
+          <h4>จิตบำบัด (Psychotherapy)</h4>
+          <p>เช่น CBT, IPT ช่วยจัดการความคิดเชิงลบ ฝึกทักษะการรับมือ เห็นผลดีมากเมื่อทำอย่างสม่ำเสมอ</p>
+          <ul class="checklist">
+            <li>นัดหมายสม่ำเสมอ</li>
+            <li>ทำการบ้าน/แบบฝึก</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4>ยาต้านซึมเศร้า</h4>
+          <p>แพทย์เป็นผู้พิจารณาและติดตามผล ควรกินต่อเนื่องตามแพทย์สั่ง แม้ดีขึ้นแล้วเพื่อป้องกันกำเริบ</p>
+          <ul class="checklist">
+            <li>ห้ามหยุดยาเอง</li>
+            <li>แจ้งอาการข้างเคียง</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4>ปรับพฤติกรรม &amp; การสนับสนุน</h4>
+          <p>นอน/กิน/ออกกำลังเป็นเวลา เจอแดดเช้า 10 นาที/วัน พูดคุยกับคนที่ไว้ใจ เพิ่มกิจกรรมที่มีความหมาย</p>
+          <div class="mini-note">มีความคิดทำร้ายตนเอง โทร <a href="tel:1323">1323</a> หรือ <a href="tel:1669">1669</a> ทันที</div>
+        </div>
+      </div>
+
+      <div class="card combo">
+        <h4>แนวทางการรักษาโดยรวม</h4>
+        <p>ส่วนใหญ่ใช้ <strong>“ผสมผสาน”</strong> ระหว่างจิตบำบัด + ยา + การปรับวิถีชีวิต ตามระดับความรุนแรงและบริบทของแต่ละคน</p>
+        <div class="cta-row">
+          <a class="btn primary" href="#experts">จองปรึกษาผู้เชี่ยวชาญ</a>
+          <a class="btn ghost" href="#hospitals">ค้นหาโรงพยาบาลใกล้ฉัน</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3) Treatment centers -->
+    <div id="panel-centers" class="panel">
+      <div class="centers-head">
+        <p class="muted">ตัวอย่างศูนย์/คลินิกที่ให้บริการด้านสุขภาพจิต (ใส่ของคุณเองได้)</p>
+        <div class="cta-row">
+          <a class="btn primary" href="#hospitals">ดูทั้งหมด</a>
+          <a class="btn ghost" href="#map">เปิดแผนที่</a>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <article class="center-card">
+          <div class="center-badge">ศูนย์รัฐ</div>
+          <h5>สถาบันสุขภาพจิตเด็กและวัยรุ่น</h5>
+          <p class="muted">จิตเวชเด็ก/วัยรุ่น, ครอบครัว, ให้คำปรึกษา</p>
+          <div class="center-actions">
+            <a class="btn primary" href="tel:1323">โทร 1323</a>
+            <a class="btn ghost" target="_blank" href="https://maps.google.com?q=สถาบันสุขภาพจิตเด็กและวัยรุ่น">แผนที่</a>
+          </div>
+        </article>
+
+        <article class="center-card">
+          <div class="center-badge">โรงพยาบาล</div>
+          <h5>รพ.ศรีธัญญา</h5>
+          <p class="muted">บริการครอบคลุมซึมเศร้า–วิตกกังวล นัดประเมิน-ติดตามอาการ</p>
+          <div class="center-actions">
+            <a class="btn primary" href="tel:024483818">โทร</a>
+            <a class="btn ghost" target="_blank" href="https://maps.google.com?q=รพ.ศรีธัญญา">แผนที่</a>
+          </div>
+        </article>
+
+        <article class="center-card">
+          <div class="center-badge">เอกชน</div>
+          <h5>คลินิกจิตเวชตัวอย่าง</h5>
+          <p class="muted">จิตบำบัด CBT/ACT นัดหมายตามเวลาคุณ</p>
+          <div class="center-actions">
+            <a class="btn primary" href="tel:021234567">โทร</a>
+            <a class="btn ghost" target="_blank" href="https://maps.google.com?q=คลินิกจิตเวช">แผนที่</a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+
 
   <!-- Services -->
   <section id="services" class="info-section light-bg">

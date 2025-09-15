@@ -548,3 +548,38 @@ document.querySelectorAll('.help-card').forEach(card=>{
   });
 });
 
+//what
+(()=> {
+  const wrap   = document.querySelector('#depress .tabs');
+  const tabs   = Array.from(document.querySelectorAll('#depress .tab'));
+  const line   = document.querySelector('#depress .tab-underline');
+  const panels = {
+    about:   document.getElementById('panel-about'),
+    treat:   document.getElementById('panel-treat'),
+    centers: document.getElementById('panel-centers')
+  };
+
+  function moveLine(btn){
+    const x = btn.offsetLeft - wrap.offsetLeft + 0; // 0 = ค่าชดเชยเพิ่มถ้าคุณเปลี่ยน padding
+    line.style.width = btn.offsetWidth + 'px';
+    line.style.transform = `translateY(-50%) translateX(${x}px)`;
+  }
+
+  tabs.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      tabs.forEach(b=>b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+      Object.values(panels).forEach(p=>p?.classList.remove('is-active'));
+      panels[btn.dataset.tab]?.classList.add('is-active');
+      moveLine(btn);
+    });
+  });
+
+  // เริ่มต้นให้ตรงแท็บที่ active (หรือปุ่มแรกถ้าไม่มีคลาส)
+  const init = document.querySelector('#depress .tab.is-active') || tabs[0];
+  if (init){ moveLine(init); }
+  // เผื่อฟอนต์โหลดช้า ทำให้ความกว้างแท็บเปลี่ยน
+  window.addEventListener('load', ()=> moveLine(init));
+  window.addEventListener('resize', ()=> moveLine(document.querySelector('#depress .tab.is-active')||tabs[0]));
+})();
+
