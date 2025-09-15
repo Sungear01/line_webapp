@@ -27,26 +27,101 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ---------------------- Navigation / Smooth scroll / Form ----------------------
 function setupNavigation() {
+  const nav       = document.getElementById('mainNav');
   const navToggle = document.getElementById('navToggle');
-  const nav = document.getElementById('mainNav');
+  const navClose  = nav ? nav.querySelector('.nav-close') : null;
+  if (!nav || !navToggle) return;
 
-  if (navToggle && nav) {
-    navToggle.addEventListener('click', () => {
-      nav.classList.toggle('open');
-      navToggle.classList.toggle('open');
-    });
+  // สร้าง overlay ถ้ายังไม่มี
+  let overlay = document.getElementById('navOverlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'navOverlay';
+    overlay.className = 'nav-overlay';
+    overlay.hidden = true;
+    document.body.appendChild(overlay);
   }
 
-  document.querySelectorAll('a[href^="#"]').forEach(a => {
-    a.addEventListener('click', e => {
+  // ช่วยระบุว่าเป็นมือถือหรือไม่
+  const isMobile = () => window.matchMedia('(max-width:1024px)').matches;
+
+  // ปรับขนาด overlay ไม่ให้ทับเมนู (เมนูโผล่จาก "ขวา")
+  function positionOverlayForNav() {
+    if (!isMobile()) {
+      overlay.style.inset = '0';             // desktop ไม่มี off-canvas
+      return;
+    }
+    const width = Math.round(nav.getBoundingClientRect().width || 270);
+    overlay.style.left   = '0';
+    overlay.style.top    = '0';
+    overlay.style.bottom = '0';
+    overlay.style.right  = width + 'px';     // กันพื้นที่ฝั่งขวาให้เมนู
+  }
+
+  const openMenu = () => {
+    nav.classList.add('open');
+    navToggle.classList.add('open');
+    nav.removeAttribute('aria-hidden');
+    navToggle.setAttribute('aria-expanded', 'true');
+
+    positionOverlayForNav();
+    overlay.hidden = false;
+    overlay.classList.add('is-open');
+
+    if (isMobile()) document.body.classList.add('no-scroll');
+
+    const first = nav.querySelector('a,button,[tabindex]:not([tabindex="-1"])');
+    first && first.focus({ preventScroll: true });
+  };
+
+  const closeMenu = () => {
+    nav.classList.remove('open');
+    navToggle.classList.remove('open');
+    nav.setAttribute('aria-hidden', 'true');
+    navToggle.setAttribute('aria-expanded', 'false');
+
+    overlay.classList.remove('is-open');
+    overlay.hidden = true;
+
+    document.body.classList.remove('no-scroll');
+    try { navToggle.focus({ preventScroll: true }); } catch {}
+  };
+
+  // ปุ่มเปิด/ปิด
+  navToggle.addEventListener('click', (e) => {
+    e.preventDefault();
+    nav.classList.contains('open') ? closeMenu() : openMenu();
+  });
+
+  // ปุ่มกากบาท
+  if (navClose) {
+    const onClose = (e) => { e.preventDefault(); e.stopPropagation(); closeMenu(); };
+    navClose.addEventListener('click', onClose);
+  }
+
+  // overlay ปิดด้วย click เท่านั้น (ไม่ใช้ touchstart เพื่อกัน iOS เด้งปิดก่อน)
+  overlay.addEventListener('click', (e) => { e.preventDefault(); closeMenu(); });
+
+  // กัน event ทะลุจากเมนูไป overlay (สำคัญบน iOS)
+  ['click','touchstart','touchend'].forEach(evt=>{
+    nav.addEventListener(evt, (e)=> e.stopPropagation(), { passive: false });
+  });
+
+  // ปิดด้วย ESC
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && nav.classList.contains('open')) closeMenu();
+  });
+
+  // แตะลิงก์ในเมนูแล้วปิด + smooth scroll
+  nav.querySelectorAll('a[href^="#"]').forEach((a) => {
+    a.addEventListener('click', (e) => {
       const href = a.getAttribute('href');
       if (!href || href === '#') return;
       e.preventDefault();
 
-      // เปลี่ยน hash เสมอ เพื่อให้ router ทำงาน
+      closeMenu();
       location.hash = href;
 
-      // smooth-scroll ถ้ามี element เป้าหมาย
       const id = href.substring(1);
       const target = document.getElementById(id);
       if (target) {
@@ -57,7 +132,36 @@ function setupNavigation() {
       }
     });
   });
+
+  // smooth-scroll สำหรับลิงก์อื่น ๆ นอกเมนู
+  document.querySelectorAll('main a[href^="#"]').forEach((a) => {
+    a.addEventListener('click', (e) => {
+      const href = a.getAttribute('href');
+      if (!href || href === '#') return;
+      e.preventDefault();
+
+      location.hash = href;
+      const id = href.substring(1);
+      const target = document.getElementById(id);
+      if (target) {
+        const header = document.querySelector('.site-header');
+        const headerH = header ? header.offsetHeight : 0;
+        const top = target.getBoundingClientRect().top + window.pageYOffset - headerH;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    });
+  });
+
+  // reposition overlay ถ้ามีการหมุนจอ/เปลี่ยนขนาด
+  window.addEventListener('resize', () => {
+    if (nav.classList.contains('open')) positionOverlayForNav();
+  });
 }
+
+
+
+
+  
 
 function setupContactForm() {
   const contactForm = document.getElementById('contactForm');
@@ -68,6 +172,8 @@ function setupContactForm() {
     contactForm.reset();
   });
 }
+
+
 
 // ---------------------- Experts ----------------------
 const EXPERTS = [
@@ -671,4 +777,5 @@ document.addEventListener('DOMContentLoaded', setup);
   window.addEventListener('load', ()=> moveLine(init));
   window.addEventListener('resize', ()=> moveLine(document.querySelector('#depress .tab.is-active')||tabs[0]));
 })();
+
 

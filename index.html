@@ -55,31 +55,48 @@
 
 <body>
   <!-- Header -->
-  <header class="site-header">
-    <div class="container header-container">
-      <a href="#" class="logo">
-  <img src="ba8f5741-4fe4-42f8-9062-b6a303890d30.png" alt="MindCare" class="logo-img" />
-  <span class="logo-text">MINDCARE</span>
-</a>
+<header class="site-header">
+  <div class="container header-container">
+    <a href="#" class="logo">
+      <img src="ba8f5741-4fe4-42f8-9062-b6a303890d30.png" alt="MindCare" class="logo-img" />
+      <span class="logo-text">MINDCARE</span>
+    </a>
 
-      <div id="userName" class="user-name"></div>
-      <nav class="nav" id="mainNav">
-        <ul>
-          <li><a href="#home">หน้าแรก</a></li>
-          <li><a href="#depress">โรคซึมเศร้าคืออะไร</a></li>
-          <li><a href="#services">บริการ</a></li>
-          <li><a href="#hospitals">โรงพยาบาลใกล้ฉัน</a></li>
-          <li><a href="#experts">แพทย์ผู้เชี่ยวชาญ</a></li>
-          <li><a href="#quiz">แบบทดสอบ</a></li>
-          <li><a href="#help">ขอความช่วยเหลือ</a></li>
-          <li><a href="#contact">ติดต่อ</a></li>
-        </ul>
-      </nav>
-      <button class="nav-toggle" id="navToggle" aria-label="open navigation">
-        <span class="hamburger"></span>
+    <div id="userName" class="user-name"></div>
+
+    <!-- เมนูหลัก (ใช้เป็น off-canvas บนมือถือ) -->
+    <nav class="nav" id="mainNav" aria-hidden="true" aria-label="หลัก">
+      <!-- ปุ่มกากบาท (โชว์เฉพาะมือถือ) -->
+      <button class="nav-close" aria-label="ปิดเมนู">
+        <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" stroke="#0b5a5a" stroke-width="2" stroke-linecap="round"/>
+        </svg>
       </button>
-    </div>
-  </header>
+
+      <ul>
+        <li><a href="#home">หน้าแรก</a></li>
+        <li><a href="#depress">โรคซึมเศร้าคืออะไร</a></li>
+        <li><a href="#services">บริการ</a></li>
+        <li><a href="#hospitals">โรงพยาบาลใกล้ฉัน</a></li>
+        <li><a href="#experts">แพทย์ผู้เชี่ยวชาญ</a></li>
+        <li><a href="#quiz">แบบทดสอบ</a></li>
+        <li><a href="#help">ขอความช่วยเหลือ</a></li>
+        <li><a href="#contact">ติดต่อ</a></li>
+      </ul>
+    </nav>
+
+    <!-- ปุ่มเปิดเมนู -->
+    <button class="nav-toggle" id="navToggle" aria-controls="mainNav" aria-expanded="false" aria-label="เปิดเมนู">
+      <span class="hamburger"></span>
+    </button>
+  </div>
+</header>
+<header>…</header>
+
+
+
+<!-- ฉากหลังคลิกปิดเมนู -->
+<div class="nav-overlay" id="navOverlay" hidden></div>
 
   <!-- Hero -->
   <section id="home" class="hero">

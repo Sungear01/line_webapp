@@ -88,6 +88,7 @@ h3{font-size:1.25rem;font-weight:700}
 }
 
 
+
 /* ----------------------- Header & Navigation ------------------- */
 .site-header{
   position:fixed; inset:0 0 auto 0; background:var(--surface);
@@ -113,6 +114,68 @@ h3{font-size:1.25rem;font-weight:700}
 .nav-toggle.open .hamburger{background:transparent}
 .nav-toggle.open .hamburger::before{transform:rotate(45deg) translate(5px,5px)}
 .nav-toggle.open .hamburger::after{transform:rotate(-45deg) translate(5px,-5px)}
+
+/* ——— Mobile nav close button: ซ่อนบนเดสก์ท็อป ——— */
+.nav .nav-close{
+  display: none !important;
+}
+
+/* ——— แสดงเฉพาะจอ <= 1024px และให้คลิกได้ชัวร์ ——— */
+@media (max-width:1024px){
+  .nav .nav-close{
+    position:absolute;
+    top:8px; right:8px;
+    width:44px; height:44px;
+    display:inline-flex !important;
+    align-items:center; justify-content:center;
+    border:1px solid #e6eef0; background:#fff;
+    border-radius:10px; cursor:pointer;
+    z-index:10021;             /* สูงกว่าเมนู */
+    pointer-events:auto;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .nav .nav-close svg{ pointer-events:none; }
+}
+
+/* ——— เลเยอร์มืดหลังเมนู (สร้างโดย JS) ——— */
+.nav-overlay{
+  position: fixed;
+  inset: 0;                      /* ครอบทั้งหน้าจอ */
+  background: rgba(0,0,0,.35);
+  opacity: 0; visibility: hidden;
+  pointer-events: none;
+  transition: opacity .25s ease;
+  z-index: 10010 !important;     /* ต่ำกว่าเมนู */
+}
+.nav-overlay.is-open{
+  opacity:1; visibility:visible;
+  pointer-events:auto;
+}
+/* เมนูต้องอยู่เหนือ overlay เสมอ */
+@media (max-width:1024px){
+  .nav{ z-index: 10040 !important; }
+}
+
+/* ย้ำลำดับซ้อนทับ */
+.nav{ z-index:10020 !important; }
+
+
+/* เปิดเมนูบนมือถือ (มีอยู่แล้ว) */
+@media (max-width:768px){
+  .nav{
+    position:fixed; top:0; right:-100%;
+    height:100%; width:270px; background:#fff;
+    box-shadow:-2px 0 10px rgba(0,0,0,.08);
+    transition:right .28s; padding-top:78px;
+    z-index:999;
+  }
+  .nav.open{ right:0; }
+  .nav ul{ flex-direction:column; gap:1rem; padding-left:1.25rem; }
+}
+
+/* กันหน้าเลื่อนตอนเมนูเปิด */
+body.no-scroll{ overflow:hidden; }
+
 
 /* ----------------------- Hero --------------------------------- */
 .hero{
@@ -163,20 +226,7 @@ h3{font-size:1.25rem;font-weight:700}
 .expert-role{font-size:.95rem;color:var(--color-muted);margin-top:.1rem}
 .expert-contact{font-size:.9rem;color:#556972;margin-top:.25rem}
 
-/* ----------------------- Expert Detail ------------------------- */
-.hidden{display:none}
-.back-link{display:inline-block;margin-bottom:1rem;color:var(--color-primary);font-weight:800}
-.expert-profile{display:grid;grid-template-columns:260px 1fr;gap:1.25rem;align-items:start}
-@media (max-width:860px){.expert-profile{grid-template-columns:1fr}}
 
-.profile-photo{width:260px;border-radius:var(--radius-lg);box-shadow:var(--shadow-md)}
-.profile-block{
-  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
-  box-shadow:var(--shadow-sm);padding:1rem 1.25rem
-}
-.profile-block h3{margin:.6rem 0 .4rem}
-.profile-list{margin:.25rem 0 0;padding-left:1.1rem}
-.profile-list li{margin:.25rem 0}
 
 /* ----------------------- Hospital Finder Styles -------------- */
 
@@ -358,3 +408,12 @@ h3{font-size:1.25rem;font-weight:700}
 /* scroll reveal */
 .reveal{opacity:0; transform:translateY(14px); transition:opacity .5s ease, transform .5s ease}
 .reveal.show{opacity:1; transform:none}
+
+/* --- FIX: ให้เมนูอยู่เหนือ overlay เสมอในมือถือ --- */
+@media (max-width:1024px){
+  .nav{ z-index:10040 !important; }      /* เดิมคุณมี z-index:999 ทำให้โดน overlay บัง */
+  #navOverlay{ z-index:10010 !important; } /* overlay ต่ำกว่า nav */
+}
+
+/* เผื่อสไตล์อื่นปิดการคลิก ให้ย้ำว่า a คลิกได้แน่ ๆ */
+.nav a{ position:relative; z-index:1; pointer-events:auto; }
