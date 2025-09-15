@@ -77,7 +77,7 @@ const EXPERTS = [
     role: 'จิตแพทย์ผู้ใหญ่',
     phone: '02-111-1001',
     email: 'sutthi@mindcare.example',
-    photo: '5930a5fa-49bc-4ae2-9763-284a4c80c631.png',
+    photo: 'dr1.png',
     education: [
       'แพทยศาสตรบัณฑิต วิทยาลัยแพทยศาสตร์พระมงกุฎเกล้า',
       'วุฒิบัตรสาขาจิตเวชศาสตร์ ศิริราชพยาบาล'
@@ -92,7 +92,7 @@ const EXPERTS = [
     role: 'จิตแพทย์ผู้ใหญ่',
     phone: '02-111-1002',
     email: 'apisamai@mindcare.example',
-    photo: 'e5039522-2df6-42b5-8d23-c5ceb3eb95ae.png',
+    photo: 'dr2.png',
     education: [
       'แพทยศาสตรบัณฑิต มหาวิทยาลัยขอนแก่น',
       'วุฒิบัตรสาขาจิตเวชศาสตร์ ศิริราชพยาบาล'
@@ -107,7 +107,7 @@ const EXPERTS = [
     role: 'จิตแพทย์ผู้ใหญ่',
     phone: '02-111-1003',
     email: 'jitarin@mindcare.example',
-    photo: 'ef199eb3-0f60-4d2d-ae5a-71d802cbe06a.png',
+    photo: 'dr3.png',
     education: [
       'แพทยศาสตรบัณฑิต มหาวิทยาลัยสงขลานครินทร์',
       'วุฒิบัตรสาขาจิตเวชศาสตร์ สถาบันจิตเวชศาสตร์สมเด็จเจ้าพระยา'
@@ -122,7 +122,7 @@ const EXPERTS = [
     role: 'อาจารย์จิตเวชศาสตร์ (โรคซึมเศร้า/จิตเวชทั่วไป)',
     phone: '02-111-1004',
     email: 'kamonnet@mindcare.example',
-    photo: '498dcf61-2887-4516-a0db-1110c9f8e837.png',
+    photo: 'dr4.png',
     education: [
       'แพทยศาสตรบัณฑิต ศิริราชพยาบาล',
       'วุฒิบัตรสาขาจิตเวชศาสตร์'
@@ -137,7 +137,7 @@ const EXPERTS = [
     role: 'ผู้เชี่ยวชาญกลุ่มโรคอารมณ์ (Mood Disorders)',
     phone: '02-111-1005',
     email: 'pornjira@mindcare.example',
-    photo: '0a607545-4f88-4f17-b909-7dc163622d80.png',
+    photo: 'dr5.png',
     education: [
       'แพทยศาสตรบัณฑิต',
       'วุฒิบัตรสาขาจิตเวชศาสตร์',
