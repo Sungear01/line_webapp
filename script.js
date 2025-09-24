@@ -329,6 +329,7 @@ function routeByHash() {
 }
 
 // ---------------------- Quiz ----------------------
+// ---------------------- Quiz ----------------------
 function buildQuiz() {
   const form = document.getElementById('quizForm');
   if (!form) return;
@@ -370,6 +371,20 @@ function buildQuiz() {
     }
     showQuizResult(score);
   });
+}
+
+function showQuizResult(score) {
+  const box = document.getElementById('quizResult');
+  if (!box) return;
+
+  let level, advice, color = '#e8f6f7', text = '#0e5766';
+  if (score <= 4) { level = 'ต่ำมาก'; advice = 'เฝ้าสังเกตอารมณ์ตนเองต่อเนื่อง'; }
+  else if (score <= 9) { level = 'ต่ำ'; advice = 'ดูแลตนเอง พักผ่อน ออกกำลัง หากไม่ดีขึ้นควรปรึกษาผู้เชี่ยวชาญ'; }
+  else if (score <= 14) { level = 'ปานกลาง'; advice = 'แนะนำให้พบผู้เชี่ยวชาญเพื่อประเมินเพิ่มเติม'; color = '#fff3cd'; text = '#7a5a00'; }
+  else if (score <= 19) { level = 'ค่อนข้างสูง'; advice = 'ควรนัดหมายพบแพทย์/นักจิตวิทยาเร็วที่สุด'; color = '#ffe3e3'; text = '#7a0b0b'; }
+  else { level = 'สูงมาก'; advice = 'กรุณาติดต่อสายด่วน/ไปโรงพยาบาลทันที หากมีความคิดทำร้ายตนเอง'; color = '#ffd7d7'; text = '#6a0000'; }
+
+  
 }
 
 function showQuizResult(score) {
