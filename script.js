@@ -328,86 +328,99 @@ function routeByHash() {
   }
 }
 
-// ---------------------- Quiz ----------------------
+
+
+
 // ---------------------- Quiz ----------------------
 function buildQuiz() {
   const form = document.getElementById('quizForm');
   if (!form) return;
 
+  // กำหนด 8 คำถาม พร้อมระบุว่าแต่ละข้อโยงไปที่ประเภทใด
   const QUESTIONS = [
-    'รู้สึกเบื่อ/ไม่สนใจสิ่งที่เคยชอบ',
-    'รู้สึกเศร้า/หดหู่/สิ้นหวัง',
-    'นอนยาก/นอนมากไป',
-    'อ่อนเพลีย/พลังงานน้อย',
-    'เบื่ออาหารหรือกินมากไป',
-    'รู้สึกแย่กับตนเอง/ล้มเหลว',
-    'ไม่มีสมาธิ',
-    'เคลื่อนไหวช้าลง/กระสับกระส่าย',
-    'คิดอยากตายหรือทำร้ายตนเอง'
+    { q:"รู้สึกเศร้าเกือบทุกวันในช่วง 2 สัปดาห์", type:"mdd" },
+    { q:"หมดความสนใจในสิ่งที่เคยชอบทำ", type:"mdd" },
+    { q:"เศร้าเรื้อรังนานต่อเนื่องเกิน 2 ปี", type:"dysthymia" },
+    { q:"เคยมีช่วงคึกคักผิดปกติสลับกับซึมเศร้า", type:"bipolar" },
+    { q:"อาการซึมเศร้าเกิดซ้ำตามฤดูกาล", type:"sad" },
+    { q:"หลังคลอดรู้สึกเศร้าหรือกังวลมากผิดปกติ", type:"postpartum" },
+    { q:"เคยได้ยินเสียง/เห็นสิ่งที่ไม่มีจริง", type:"psychotic" },
+    { q:"เมื่อเศร้ามักกินมาก/นอนมากและอารมณ์ดีขึ้นชั่วคราว", type:"atypical" }
   ];
 
-  form.innerHTML = QUESTIONS.map((q, i)=>`
+  // Map ประเภท
+  const TYPES = {
+    mdd: "โรคซึมเศร้าใหญ่ (MDD)",
+    dysthymia: "โรคซึมเศร้าเรื้อรัง (Dysthymia)",
+    bipolar: "โรคอารมณ์สองขั้ว (Bipolar)",
+    sad: "โรคซึมเศร้าตามฤดูกาล (SAD)",
+    postpartum: "ภาวะซึมเศร้าหลังคลอด",
+    psychotic: "ซึมเศร้าที่มีอาการทางจิต",
+    atypical: "ซึมเศร้าแบบไม่ปกติ (Atypical)"
+  };
+
+  // สร้างฟอร์ม
+  form.innerHTML = QUESTIONS.map((item,i)=>`
     <div class="quiz-item">
-      <h4>${i+1}. ${q}</h4>
+      <h4>${i+1}. ${item.q}</h4>
       <div class="quiz-options">
-        ${[0,1,2,3].map(v => `
+        ${['ไม่เลย','บางครั้ง','บ่อย','เกือบทุกวัน'].map((label,v)=>`
           <label>
             <input type="radio" name="q${i}" value="${v}" required>
-            ${['ไม่เลย','บางวัน','บ่อยครั้ง','แทบทุกวัน'][v]}
+            ${label}
           </label>
         `).join('')}
       </div>
     </div>
-  `).join('') + `
-    <button class="cta-button quiz-submit" type="submit">ดูผลลัพธ์</button>
-  `;
+  `).join('') + `<button class="cta-button quiz-submit" type="submit">ดูผลลัพธ์</button>`;
 
-  form.addEventListener('submit', e => {
+  // คำนวณผล
+  form.addEventListener('submit', e=>{
     e.preventDefault();
     const data = new FormData(form);
-    let score = 0;
-    for (let i = 0; i < QUESTIONS.length; i++) {
-      score += Number(data.get(`q${i}`) || 0);
+
+    // เก็บคะแนนตามประเภท
+    const scores = {};
+    QUESTIONS.forEach((item,i)=>{
+      const val = Number(data.get(`q${i}`) || 0);
+      if (!scores[item.type]) scores[item.type] = 0;
+      scores[item.type] += val;
+    });
+
+    // หาประเภทที่ได้คะแนนสูงสุด
+    let topType = null, topScore = -1;
+    for (const [type,score] of Object.entries(scores)) {
+      if (score > topScore) {
+        topType = type;
+        topScore = score;
+      }
     }
-    showQuizResult(score);
+
+    const maxScore = 3; // แต่ละข้อ max = 3 คะแนน
+    const percent = Math.round((topScore / maxScore) * 100);
+
+    showQuizResult(TYPES[topType], percent);
   });
 }
 
-function showQuizResult(score) {
+function showQuizResult(typeName, percent){
   const box = document.getElementById('quizResult');
-  if (!box) return;
-
-  let level, advice, color = '#e8f6f7', text = '#0e5766';
-  if (score <= 4) { level = 'ต่ำมาก'; advice = 'เฝ้าสังเกตอารมณ์ตนเองต่อเนื่อง'; }
-  else if (score <= 9) { level = 'ต่ำ'; advice = 'ดูแลตนเอง พักผ่อน ออกกำลัง หากไม่ดีขึ้นควรปรึกษาผู้เชี่ยวชาญ'; }
-  else if (score <= 14) { level = 'ปานกลาง'; advice = 'แนะนำให้พบผู้เชี่ยวชาญเพื่อประเมินเพิ่มเติม'; color = '#fff3cd'; text = '#7a5a00'; }
-  else if (score <= 19) { level = 'ค่อนข้างสูง'; advice = 'ควรนัดหมายพบแพทย์/นักจิตวิทยาเร็วที่สุด'; color = '#ffe3e3'; text = '#7a0b0b'; }
-  else { level = 'สูงมาก'; advice = 'กรุณาติดต่อสายด่วน/ไปโรงพยาบาลทันที หากมีความคิดทำร้ายตนเอง'; color = '#ffd7d7'; text = '#6a0000'; }
-
-  
-}
-
-function showQuizResult(score) {
-  const box = document.getElementById('quizResult');
-  if (!box) return;
-
-  let level, advice, color = '#e8f6f7', text = '#0e5766';
-  if (score <= 4) { level = 'ต่ำมาก'; advice = 'เฝ้าสังเกตอารมณ์ตนเองต่อเนื่อง'; }
-  else if (score <= 9) { level = 'ต่ำ'; advice = 'ดูแลตนเอง พักผ่อน ออกกำลัง หากไม่ดีขึ้นควรปรึกษาผู้เชี่ยวชาญ'; }
-  else if (score <= 14) { level = 'ปานกลาง'; advice = 'แนะนำให้พบผู้เชี่ยวชาญเพื่อประเมินเพิ่มเติม'; color = '#fff3cd'; text = '#7a5a00'; }
-  else if (score <= 19) { level = 'ค่อนข้างสูง'; advice = 'ควรนัดหมายพบแพทย์/นักจิตวิทยาเร็วที่สุด'; color = '#ffe3e3'; text = '#7a0b0b'; }
-  else { level = 'สูงมาก'; advice = 'กรุณาติดต่อสายด่วน/ไปโรงพยาบาลทันที หากมีความคิดทำร้ายตนเอง'; color = '#ffd7d7'; text = '#6a0000'; }
-
   box.innerHTML = `
-    <div style="background:${color};border-radius:12px;padding:1rem">
-      <p><strong>คะแนนรวม:</strong> ${score} จาก 27</p>
-      <p><span class="badge" style="background:#134b5b;color:#fff">${level}</span></p>
-      <p style="color:${text}">${advice}</p>
-      <p style="font-size:.9rem;opacity:.8">* แบบทดสอบนี้ไม่ใช่การวินิจฉัยทางการแพทย์</p>
-      <p><a class="ghost-button" href="#hospitals">หาโรงพยาบาลใกล้ฉัน</a></p>
+    <div style="background:#f5faff;border-radius:12px;padding:1rem; text-align:center">
+      <p><strong>ผลการประเมิน:</strong></p>
+      <p>คุณมีแนวโน้มเป็น <strong>${typeName}</strong> (${percent}%)</p>
+      <p><em>* ผลนี้เป็นเพียงการคัดกรองเบื้องต้น ควรปรึกษาผู้เชี่ยวชาญเพื่อวินิจฉัยที่ถูกต้อง</em></p>
+      <div style="margin-top:1rem;">
+        <a class="cta-button" href="#experts" 
+           style="display:inline-block; padding:10px 18px; background:#0e5766; color:#fff; border-radius:8px; text-decoration:none;">
+          พบแพทย์แนะนำ
+        </a>
+      </div>
     </div>
   `;
 }
+
+
 
 /* ====================== MindCare — Hospital Finder (JS) ====================== */
 /*  คุณสมบัติ:
