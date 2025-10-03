@@ -327,7 +327,9 @@ function routeByHash() {
     secDetail.classList.add('hidden');
   }
 }
-
+function openDoctor(slug) {
+  window.location.href = "doctor.html?doctor=" + slug;
+}
 
 
 
