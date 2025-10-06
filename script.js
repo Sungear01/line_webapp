@@ -1,11 +1,14 @@
-/*
- * MindCare App – Navigation + Experts + Expert Detail + Quiz + Hospital Finder
- * - รวม listener เหลือครั้งเดียว
- * - แก้ main ที่ไม่ถูกประกาศ
- * - กัน null element
- * - ปรับ Google Maps URL
- * - Hospital finder ใช้ Leaflet + ระยะ 5–50 กม.
- */
+/* ==========================================================================
+   MindCare — App Script (Navigation • Experts • Expert Detail • Quiz • Hospital Finder)
+   --------------------------------------------------------------------------
+   - Boot & Router
+   - Navigation / Smooth Scroll / Contact Form
+   - Experts Grid + Expert Detail
+   - Quiz (Screening)
+   - Hospital Finder (Leaflet + Google Sync)
+   - Tabs (Depression Content)
+   - Utilities / Helpers
+   ========================================================================== */
 
 // ---------------------- Boot ----------------------
 document.addEventListener('DOMContentLoaded', () => {
